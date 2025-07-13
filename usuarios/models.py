@@ -64,6 +64,7 @@ class Usuario(models.Model):
     tipo_usuario = models.TextField(blank=True, null=True)  # This field type is a guess.
     id_comunidad = models.ForeignKey(Comunidad, models.DO_NOTHING, db_column='id_comunidad', blank=True, null=True)
     habilitado = models.BooleanField(blank=True, null=True)
+    plan_actual = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
         db_table = 'usuario'

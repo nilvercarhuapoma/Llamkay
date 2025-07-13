@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmación de Suscripción</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>¡Gracias por suscribirte!</h1>
+        <p>Tu plan <strong>{{ plan }}</strong> ha sido activado correctamente.</p>
+    </header>
+
+    <section style="text-align: center; margin: 3rem;">
+        <a href="{% url 'monetizacion:subscripcion' %}" class="btn">Volver a Planes</a>
+    </section>
+
+    <footer>
+        © 2025 Llamkay - Conectando personas con oportunidades
+    </footer>
+</body>
+</html>

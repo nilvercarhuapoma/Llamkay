@@ -23,10 +23,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('trabajo_llamkay.urls')),
 
-    path('usuarios/', include('usuarios.urls')),  
+    path('usuarios/', include('usuarios.urls')),
     path('trabajos/', include('trabajos.urls')),
     path('chats/', include('chats.urls')),
-    
+    path('subscripciones/', include('monetizacion.urls')),
 
 ] 
 if settings.DEBUG:

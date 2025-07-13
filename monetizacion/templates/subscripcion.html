@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Planes de Suscripción - Llamkay</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Elige tu plan para encontrar trabajo con Llamkay</h1>
+        <p>Accede a oportunidades laborales adaptadas a tus necesidades</p>
+    </header>
+
+    <section class="plans-container">
+        <div class="plan">
+            <h2>Plan Gratuito</h2>
+            <p class="price">S/ 0</p>
+            <ul class="features">
+                <li>Crear perfil profesional</li>
+                <li>Aplicar a 5 trabajos por mes</li>
+                <li>Acceso limitado a empresas</li>
+            </ul>
+            <a href="{% url 'monetizacion:pagar_gratis' %}" class="btn">Comenzar Gratis</a>
+        </div>
+
+        <div class="plan">
+            <h2>Plan Premium</h2>
+            <p class="price">S/ 29.90 / mes</p>
+            <ul class="features">
+                <li>Aplicaciones ilimitadas</li>
+                <li>Recomendaciones personalizadas</li>
+                <li>Soporte prioritario</li>
+                <li>Visibilidad destacada</li>
+            </ul>
+            <a href="{% url 'monetizacion:crear_pago' 'premium' %}" class="btn">Mejorar a Premium</a>
+        </div>
+
+        <div class="plan">
+            <h2>Empresas</h2>
+            <p class="price">Desde S/ 79.90 / mes</p>
+            <ul class="features">
+                <li>Publica ofertas ilimitadas</li>
+                <li>Filtros avanzados por comunidad</li>
+                <li>Acceso a base de trabajadores verificados</li>
+                <li>Soporte empresarial</li>
+            </ul>
+            <a href="{% url 'monetizacion:crear_pago' 'empresas' %}" class="btn">Registrar Empresa</a>
+        </div>
+    </section>
+
+    <footer>
+        © 2025 Llamkay - Conectando personas con oportunidades
+    </footer>
+</body>
+</html>

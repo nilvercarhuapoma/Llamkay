@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
+DOMAIN = os.getenv('DOMAIN')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,14 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'trabajo_llamkay',
     #'usuarios.apps.UsuariosConfig',
-
-   
-
     'trabajos',
     'usuarios',
     'chats',
-
- 
+    'monetizacion'
 ]
 
 MIDDLEWARE = [
@@ -89,9 +91,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': 'llamkay',
-        'USER': 'leimer',
-        'PASSWORD': '12345',
+        'NAME': 'test-db',
+        'USER': 'root',
+        'PASSWORD': '123456',
 
        
         'HOST': 'localhost',
@@ -147,7 +149,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 
 # Solo si estás en desarrollo (fuera de producción)
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+# STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 
 LOGIN_REDIRECT_URL = 'trabajo_llamkay:home' #redirección de usuarios con inicio de sesión a index
 
