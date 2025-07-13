@@ -1,3 +1,12 @@
+from decouple import config
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
+GOOGLE_REDIRECT_URI = config('GOOGLE_REDIRECT_URI')
+GOOGLE_PROJECT_ID = config('GOOGLE_PROJECT_ID')
+
+
+
 # ========== IMPORTACIONES ==========
 import os, json, logging, traceback
 
@@ -548,25 +557,34 @@ def buscar_usuarios(request):
 
 # --- API GOOGLE CALENDAR ---
 
+# --- API GOOGLE CALENDAR ---
+
+@login_required
 def conectar_google_calendar(request):
     flow = build_flow()
-    auth_url, _ = flow.authorization_url(prompt='consent', access_type='offline', include_granted_scopes='true')
+    auth_url, _ = flow.authorization_url(
+        prompt='consent',
+        access_type='offline',
+        include_granted_scopes='true'
+    )
     return redirect(auth_url)
 
 
+@login_required
 def oauth2callback(request):
     """
     Google redirige aquí después de que el usuario concede permiso.
     Intercambiamos el 'code' por el access/refresh token y lo guardamos.
     """
-    flow = build_flow()  # usa las mismas credenciales y scopes
+    flow = build_flow()
     flow.fetch_token(authorization_response=request.build_absolute_uri())
 
-    creds = load_token(request.user.id)     # ya contiene access + refresh token
-    save_token(creds)             # lo guardamos (en token.pickle, o cámbialo a BD)
+    creds = flow.credentials  # ✅ Obtiene credenciales nuevas desde el flujo
+    user_id = request.user.id
 
-    # Redirige a donde prefieras tras la conexión exitosa
-    return redirect('usuarios:dashboard')   # o 'evento_demo', etc.
+    save_token(creds, user_id)  # ✅ Guarda token correctamente
+
+    return redirect('usuarios:dashboard')  # Redirige al panel, o donde gustes
 
 
 def crear_evento_demo(request):
