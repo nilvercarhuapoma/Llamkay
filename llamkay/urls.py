@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from usuarios.views import oauth2callback, desconectar_google
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +29,10 @@ urlpatterns = [
     path('trabajos/', include('trabajos.urls')),
     path('chats/', include('chats.urls')),
     
+    #Google calendar
+    path('oauth2callback/', oauth2callback, name='oauth_callback'),
+    path('desconectar-google/', desconectar_google, name='desconectar_google'),
+
 
 ] 
 if settings.DEBUG:

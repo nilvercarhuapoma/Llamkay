@@ -1,310 +1,15 @@
-// static/js/perfil.js
+// static/js/perfil.js - Versión corregida sin conflicto de tabs
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🎯 Perfil.js cargado');
     
-    // Inicializar tabs
-    initializeTabs();
-    
-    // Inicializar otros componentes
+    // Inicializar componentes del perfil (sin tabs, eso lo maneja tabs.js)
     initializeProfile();
+    
+    // Esperar a que tabs.js se cargue
+    setTimeout(() => {
+        initializeProfileSpecificFeatures();
+    }, 100);
 });
-
-/**
- * Inicializar funcionalidad de tabs
- */
-function initializeTabs() {
-    console.log('🔄 Inicializando tabs...');
-    
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    // Verificar que existen tabs
-    if (tabs.length === 0) {
-        console.warn('⚠️ No se encontraron tabs');
-        return;
-    }
-    
-    // Agregar event listeners a cada tab
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const targetTab = this.getAttribute('onclick');
-            if (targetTab) {
-                // Extraer el nombre del tab del onclick
-                const tabName = targetTab.match(/showTab\('([^']+)'\)/)[1];
-                showTab(tabName);
-            }
-        });
-    });
-    
-    console.log(`✅ ${tabs.length} tabs inicializados`);
-}
-
-/**
- * Mostrar tab específico
- * @param {string} tabName - Nombre del tab a mostrar
- */
-function showTab(tabName) {
-    console.log(`🔍 Mostrando tab: ${tabName}`);
-    
-    // Ocultar todos los contenidos
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    // Remover clase active de todos los tabs
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Mostrar el contenido seleccionado
-    const targetContent = document.getElementById(tabName);
-    if (targetContent) {
-        targetContent.classList.add('active');
-        
-        // Activar el tab correspondiente
-        const activeTab = document.querySelector(`[onclick="showTab('${tabName}')"]`);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        }
-        
-        // Cargar contenido específico del tab si es necesario
-        loadTabContent(tabName);
-        
-        console.log(`✅ Tab ${tabName} activado`);
-    } else {
-        console.error(`❌ No se encontró contenido para tab: ${tabName}`);
-    }
-}
-
-/**
- * Cargar contenido específico para cada tab
- * @param {string} tabName - Nombre del tab
- */
-function loadTabContent(tabName) {
-    switch(tabName) {
-        case 'general':
-            loadGeneralContent();
-            break;
-        case 'skills':
-            loadSkillsContent();
-            break;
-        case 'portfolio':
-            loadPortfolioContent();
-            break;
-        case 'history':
-            loadHistoryContent();
-            break;
-        default:
-            console.log(`ℹ️ No hay carga específica para tab: ${tabName}`);
-    }
-}
-
-/**
- * Cargar contenido de la pestaña General
- */
-function loadGeneralContent() {
-    console.log('📊 Cargando contenido general...');
-    
-    // Aquí puedes cargar datos dinámicos del usuario
-    // Por ejemplo, actualizar estadísticas en tiempo real
-    updateUserStats();
-    updateRecentActivity();
-}
-
-/**
- * Cargar contenido de la pestaña Servicios
- */
-function loadSkillsContent() {
-    console.log('🛠️ Cargando contenido de servicios...');
-    
-    // Cargar servicios del usuario desde el backend
-    loadUserServices();
-}
-
-/**
- * Cargar contenido de la pestaña Portfolio
- */
-function loadPortfolioContent() {
-    console.log('📸 Cargando contenido del portfolio...');
-    
-    // Cargar trabajos realizados
-    loadUserPortfolio();
-}
-
-/**
- * Cargar contenido de la pestaña Historial
- */
-function loadHistoryContent() {
-    console.log('📋 Cargando historial...');
-    
-    // Cargar historial de trabajos
-    loadWorkHistory();
-}
-
-/**
- * Actualizar estadísticas del usuario
- */
-function updateUserStats() {
-    // Esta función se conectará con el backend para obtener estadísticas reales
-    console.log('📈 Actualizando estadísticas...');
-    
-    // Ejemplo de animación de números
-    animateNumbers();
-}
-
-/**
- * Animar números en las estadísticas
- */
-function animateNumbers() {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
-    statNumbers.forEach(stat => {
-        const finalValue = stat.textContent;
-        const numericValue = parseInt(finalValue.replace(/[^\d]/g, ''));
-        
-        if (!isNaN(numericValue)) {
-            animateValue(stat, 0, numericValue, 1000, finalValue);
-        }
-    });
-}
-
-/**
- * Animar un valor numérico
- * @param {Element} element - Elemento a animar
- * @param {number} start - Valor inicial
- * @param {number} end - Valor final
- * @param {number} duration - Duración en ms
- * @param {string} originalText - Texto original con formato
- */
-function animateValue(element, start, end, duration, originalText) {
-    const startTime = performance.now();
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        const current = Math.floor(start + (end - start) * progress);
-        
-        // Mantener el formato original (ej: "S/ 3,200")
-        if (originalText.includes('S/')) {
-            element.textContent = `S/ ${current.toLocaleString()}`;
-        } else if (originalText.includes('%')) {
-            element.textContent = `${current}%`;
-        } else {
-            element.textContent = current;
-        }
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    
-    requestAnimationFrame(update);
-}
-
-/**
- * Actualizar actividad reciente
- */
-function updateRecentActivity() {
-    console.log('⚡ Actualizando actividad reciente...');
-    
-    // Aquí cargarías la actividad reciente desde el backend
-    // Por ahora, solo agregamos un efecto visual
-    const activityItems = document.querySelectorAll('#general .info-item');
-    activityItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '0.5';
-            setTimeout(() => {
-                item.style.opacity = '1';
-            }, 200);
-        }, index * 100);
-    });
-}
-
-/**
- * Cargar servicios del usuario
- */
-function loadUserServices() {
-    console.log('🔧 Cargando servicios del usuario...');
-    
-    // Esta función se conectará con el backend
-    // Por ahora, agregamos efectos visuales
-    const skillTags = document.querySelectorAll('.skill-tag');
-    skillTags.forEach((tag, index) => {
-        setTimeout(() => {
-            tag.style.transform = 'scale(1.05)';
-            setTimeout(() => {
-                tag.style.transform = 'scale(1)';
-            }, 200);
-        }, index * 50);
-    });
-}
-
-/**
- * Cargar portfolio del usuario
- */
-function loadUserPortfolio() {
-    console.log('🎨 Cargando portfolio...');
-    
-    // Efectos visuales para portfolio
-    const portfolioItems = document.querySelectorAll('.portfolio-item');
-    portfolioItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                item.style.opacity = '1';
-                item.style.transform = 'translateY(0)';
-            }, 100);
-        }, index * 150);
-    });
-}
-
-/**
- * Cargar historial de trabajos
- */
-function loadWorkHistory() {
-    console.log('📜 Cargando historial de trabajos...');
-    
-    // Esta función cargará el historial real desde el backend
-    // Por ahora, preparamos el contenedor
-    const historyContainer = document.getElementById('history');
-    if (historyContainer && !historyContainer.innerHTML.trim()) {
-        // Si no hay contenido, mostrar mensaje de carga
-        historyContainer.innerHTML = `
-            <div class="loading-message">
-                <div class="spinner"></div>
-                <p>Cargando historial de trabajos...</p>
-            </div>
-        `;
-        
-        // Simular carga de datos
-        setTimeout(() => {
-            loadHistoryData();
-        }, 1000);
-    }
-}
-
-/**
- * Cargar datos del historial
- */
-function loadHistoryData() {
-    const historyContainer = document.getElementById('history');
-    historyContainer.innerHTML = historyHTML;
-    
-    //Animar la aparición del contenido
-    const workItems = historyContainer.querySelectorAll('.work-item');
-    workItems.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateX(-20px)';
-        setTimeout(() => {
-            item.style.opacity = '1';
-            item.style.transform = 'translateX(0)';
-        }, index * 100);
-    });
-}
 
 /**
  * Inicializar funcionalidades generales del perfil
@@ -318,8 +23,28 @@ function initializeProfile() {
     // Agregar efectos de hover mejorados
     initializeHoverEffects();
     
-    // Inicializar tooltips si es necesario
+    // Inicializar previsualización de foto
+    initializePhotoPreview();
+    
+    // Inicializar tooltips
     initializeTooltips();
+}
+
+/**
+ * Inicializar características específicas del perfil después de que tabs.js esté listo
+ */
+function initializeProfileSpecificFeatures() {
+    console.log('🔧 Inicializando características específicas del perfil...');
+    
+    // Verificar que el sistema de tabs esté funcionando
+    const activeTab = document.querySelector('.tab.active');
+    if (!activeTab) {
+        // Si no hay tab activo, activar el general
+        const generalTab = document.querySelector('.tab[data-tab="general"]');
+        if (generalTab) {
+            generalTab.click();
+        }
+    }
 }
 
 /**
@@ -328,40 +53,154 @@ function initializeProfile() {
 function initializeButtons() {
     console.log('🔘 Inicializando botones...');
     
-    const editButton = document.querySelector('[onclick="editProfile()"]');
-    if (editButton) {
-        editButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Llamar a la función del modal renombrada
-            window.openEditProfileModal();
-        });
-    }
+    const editButton = document.querySelector('.profile-actions .btn-primary');
+        if (editButton) {
+            editButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                openEditProfileModal();
+            });
+        }
+
     
-    // Botones de acción en cards
-    const cardActions = document.querySelectorAll('.card-action');
-    cardActions.forEach(action => {
-        action.addEventListener('click', function(e) {
+    // Botones de compartir
+    const shareButtons = document.querySelectorAll('.btn-secondary');
+    shareButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
-            const cardTitle = this.closest('.card').querySelector('.card-title').textContent;
-            console.log(`📝 Editando: ${cardTitle}`);
-            // Aquí agregarías la lógica específica para cada tipo de edición
+            const buttonText = this.textContent;
+            
+            if (buttonText.includes('WhatsApp')) {
+                shareOnWhatsApp();
+            } else if (buttonText.includes('Referencias')) {
+                showReferences();
+            }
         });
     });
 }
 
 /**
- * Función para editar perfil
+ * Abrir modal de edición de perfil
  */
-function editProfile() {
-    console.log('✏️ Editando perfil...');
+function openEditProfileModal() {
+    console.log('✏️ Abriendo modal de edición...');
     
-    // Aquí implementarías la lógica para editar el perfil
-    // Por ejemplo, abrir un modal o redirigir a una página de edición
+    const modal = document.getElementById('editProfileModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+        
+        // Agregar event listener para cerrar con ESC
+        document.addEventListener('keydown', handleModalKeydown);
+        
+        // Event listener para cerrar clickeando fuera del modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeEditProfileModal();
+            }
+        });
+    } else {
+        console.error('❌ No se encontró el modal de edición');
+    }
+}
+
+/**
+ * Cerrar modal de edición de perfil
+ */
+function closeEditProfileModal() {
+    console.log('❌ Cerrando modal de edición...');
     
-    // Ejemplo de lo que podrías hacer:
-    // openEditModal();
-    // o
-    // window.location.href = '/usuarios/editar-perfil/';
+    const modal = document.getElementById('editProfileModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaurar scroll del body
+        
+        // Remover event listeners
+        document.removeEventListener('keydown', handleModalKeydown);
+    }
+}
+
+/**
+ * Manejar teclas del modal
+ */
+function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+        closeEditProfileModal();
+    }
+}
+
+/**
+ * Compartir en WhatsApp
+ */
+function shareOnWhatsApp() {
+    console.log('📱 Compartiendo en WhatsApp...');
+    
+    const userName = document.querySelector('.profile-info h1')?.textContent || 'Perfil';
+    const message = `¡Conoce mi perfil profesional en LLamkay.pe! ${userName} - ${window.location.href}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+}
+
+/**
+ * Mostrar referencias
+ */
+function showReferences() {
+    console.log('📋 Mostrando referencias...');
+    
+    // Cambiar a la pestaña de experiencia que contiene las calificaciones
+    if (window.showTab) {
+        window.showTab('experience');
+    }
+    
+    // Scroll hacia las calificaciones si existen
+    setTimeout(() => {
+        const calificaciones = document.querySelector('#experience .calificaciones');
+        if (calificaciones) {
+            calificaciones.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 300);
+}
+
+/**
+ * Inicializar previsualización de foto
+ */
+function initializePhotoPreview() {
+    console.log('📸 Inicializando previsualización de foto...');
+    
+    const fotoInput = document.getElementById('foto');
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    alert('Por favor selecciona un archivo de imagen válido.');
+                    return;
+                }
+                
+                // Validar tamaño (máximo 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen es demasiado grande. Por favor selecciona una imagen menor a 5MB.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const profilePhoto = document.querySelector('.profile-photo');
+                    const initialsSpan = document.querySelector('.profile-avatar .initials');
+                    
+                    if (profilePhoto) {
+                        profilePhoto.src = e.target.result;
+                        profilePhoto.style.display = 'block';
+                        if (initialsSpan) {
+                            initialsSpan.style.display = 'none';
+                        }
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 }
 
 /**
@@ -370,10 +209,11 @@ function editProfile() {
 function initializeHoverEffects() {
     console.log('✨ Inicializando efectos de hover...');
     
-    // Efectos para cards - usando los mismos valores que perfil.css
+    // Efectos para cards
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
         card.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s ease';
             this.style.transform = 'translateY(-8px)';
             this.style.boxShadow = '0 12px 40px rgba(0,0,0,0.15)';
         });
@@ -384,19 +224,35 @@ function initializeHoverEffects() {
         });
     });
     
-    // Efectos para stat cards - consistente con perfil.css
+    // Efectos para stat cards
     const statCards = document.querySelectorAll('.stat-card');
     statCards.forEach(stat => {
         stat.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s ease';
             this.style.transform = 'scale(1.05)';
-            this.style.borderColor = '#07734B'; // Color verde principal
-            this.style.background = '#fff7ed';
+            this.style.borderColor = '#07734B';
+            this.style.background = 'linear-gradient(135deg, #fff7ed, #fef3e2)';
         });
         
         stat.addEventListener('mouseleave', function() {
             this.style.transform = 'scale(1)';
             this.style.borderColor = '#DEF9C4';
             this.style.background = '#fef7ed';
+        });
+    });
+    
+    // Efectos para badges
+    const badges = document.querySelectorAll('.profile-badge');
+    badges.forEach(badge => {
+        badge.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s ease';
+            this.style.transform = 'scale(1.1)';
+            this.style.boxShadow = '0 4px 12px rgba(7, 115, 75, 0.3)';
+        });
+        
+        badge.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = 'none';
         });
     });
 }
@@ -411,92 +267,238 @@ function initializeTooltips() {
     const elementsWithTitle = document.querySelectorAll('[title]');
     elementsWithTitle.forEach(element => {
         element.addEventListener('mouseenter', function() {
-            // Aquí podrías implementar tooltips personalizados
             console.log(`💡 Tooltip: ${this.getAttribute('title')}`);
         });
     });
+    
+    // Tooltip personalizado para estadísticas
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach((stat, index) => {
+        const labels = ['trabajos totales', 'trabajos activos', 'completados', 'estrellas promedio', 'satisfacción', 'ingresos mensuales'];
+        stat.setAttribute('title', `${stat.textContent} ${labels[index] || 'estadística'}`);
+    });
 }
 
-// Funciones globales para mantener compatibilidad
-window.showTab = showTab;
-window.editProfile = editProfile;
+/**
+ * Manejar envío del formulario de edición
+ */
+function handleEditFormSubmit() {
+    const form = document.getElementById('form-editar-perfil');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('📤 Enviando formulario de edición...');
+            
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            
+            // Mostrar estado de carga
+            submitButton.textContent = 'Guardando...';
+            submitButton.disabled = true;
+            
+            // Simular envío (reemplazar con lógica real)
+            const formData = new FormData(form);
+            
+            // Aquí harías la petición AJAX real
+            fetch(form.action || window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    console.log('✅ Perfil actualizado correctamente');
+                    closeEditProfileModal();
+                    
+                    // Mostrar mensaje de éxito
+                    showSuccessMessage('Perfil actualizado correctamente');
+                    
+                    // Actualizar la página después de un breve delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(data.message || 'Error al actualizar perfil');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error al actualizar perfil:', error);
+                showErrorMessage('Error al actualizar el perfil: ' + error.message);
+            })
+            .finally(() => {
+                // Restaurar botón
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            });
+        });
+    }
+}
 
-// Agregar estilos CSS adicionales coherentes con perfil.css
-const additionalStyles = `
-    .tab-content {
-        transition: opacity 0.3s ease;
-        opacity: 0;
+/**
+ * Mostrar mensaje de éxito
+ */
+function showSuccessMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success';
+    alert.textContent = message;
+    alert.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #d4edda;
+        color: #155724;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #c3e6cb;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+
+/**
+ * Mostrar mensaje de error
+ */
+function showErrorMessage(message) {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-error';
+    alert.textContent = message;
+    alert.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
+// Inicializar el manejo del formulario cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        handleEditFormSubmit();
+    }, 500);
+});
+
+// Funciones globales para mantener compatibilidad
+window.openEditProfileModal = openEditProfileModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.cerrarModalEdicion = closeEditProfileModal; // Alias para compatibilidad
+
+// Agregar estilos CSS para el modal y animaciones
+const modalStyles = `
+    .edit-profile-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        backdrop-filter: blur(5px);
     }
     
-    .tab-content.active {
-        opacity: 1;
+    .edit-profile-modal form {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: modalSlideIn 0.3s ease;
     }
     
-    .card {
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .modal-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
         transition: all 0.3s ease;
-        transform: translateY(0);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
     
-    .stat-card {
-        transition: all 0.3s ease;
-        transform: scale(1);
-        border-color: #DEF9C4;
-        background: #fef7ed;
+    .modal-buttons button[type="submit"] {
+        background: #07734B;
+        color: white;
     }
     
-    .work-item {
-        transition: all 0.3s ease;
-        opacity: 1;
-        transform: translateX(0);
+    .modal-buttons button[type="submit"]:hover {
+        background: #05592f;
+        transform: translateY(-2px);
     }
     
-    .loading-message {
-        text-align: center;
-        padding: 2rem;
-        color: #666;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    .modal-buttons button[type="button"] {
+        background: #6c757d;
+        color: white;
     }
     
-    .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid #DEF9C4;
-        border-top: 4px solid #07734B;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 1rem;
+    .modal-buttons button[type="button"]:hover {
+        background: #545b62;
+        transform: translateY(-2px);
     }
     
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Efectos de skill tags consistentes */
-    .skill-tag {
-        transition: transform 0.3s ease;
-        transform: scale(1);
-    }
-    
-    /* Efectos de portfolio items */
-    .portfolio-item {
-        transition: all 0.3s ease;
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    /* Botones con estilo consistente */
-    button[type="submit"]:disabled {
-        background: #9CDBA6 !important;
-        cursor: not-allowed !important;
+    .modal-buttons button:disabled {
         opacity: 0.7;
+        cursor: not-allowed;
+        transform: none !important;
     }
 `;
 
-// Inyectar estilos adicionales
+// Inyectar estilos del modal
 const styleSheet = document.createElement('style');
-styleSheet.textContent = additionalStyles;
+styleSheet.textContent = modalStyles;
 document.head.appendChild(styleSheet);
 
-console.log('🎉 Perfil.js completamente inicializado');
+console.log('🎉 Perfil.js completamente inicializado (sin conflictos de tabs)');

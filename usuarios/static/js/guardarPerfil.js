@@ -1,4 +1,9 @@
 // ==== Modal de edición ====
+function editProfile() {
+    openEditProfileModal();
+}
+window.editProfile = editProfile;
+
 function openEditProfileModal() {
     const modal = document.getElementById('editProfileModal');
     if (modal) {

@@ -38,4 +38,16 @@ urlpatterns = [
     
     #AJAX
     path('subir_certificaciones/', utils.subir_certificaciones, name='subir_certificaciones'),
+    
+    #API google-calendar
+    path('conectar-google/', views.conectar_google_calendar, name='conectar_google'),
+    path('oauth2callback/', views.oauth2callback, name='oauth_callback'),
+    path('evento-demo/', views.crear_evento_demo, name='evento_demo'),
+    
+    
+    #Exportar Portafolio
+    path('exportar-portafolio/', views.exportar_portafolio_pdf, name='exportar_portafolio_pdf'),
+    
+    path('buscar/', views.buscar_usuarios,   name='buscar_usuarios'),
+    path('calificar/<int:usuario_id>/', views.calificar_usuario, name='calificar'),
 ]

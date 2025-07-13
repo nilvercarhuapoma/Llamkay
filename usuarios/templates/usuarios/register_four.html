@@ -57,7 +57,10 @@
                 <span class="upload-title">Haz clic para subir archivos</span>
                 <span class="upload-subtitle">o arrastra y suelta aquí</span>
               </div>
+              <!-- NUEVO: Lista de archivos dentro del área de upload -->
+              <div class="upload-files-list" id="uploadFilesList"></div>
             </div>
+            <!-- Mantener para compatibilidad pero oculto -->
             <div class="selected-files" id="selectedFiles"></div>
           </div>
           
@@ -76,7 +79,6 @@
         </div>
       </fieldset>
     </form>
-
 
     <p class="login-link">
       ¿Ya tienes una cuenta? <a href="{% url 'usuarios:login' %}">Inicia sesión aquí</a>

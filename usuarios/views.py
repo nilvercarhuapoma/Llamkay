@@ -1,22 +1,30 @@
 # ========== IMPORTACIONES ==========
 import os, json, logging, traceback
-from datetime import datetime
+
+from datetime import datetime, timedelta
+from xhtml2pdf import pisa
+from io import BytesIO
 
 from django.contrib import messages
+
+from django.http import HttpResponse
 from django.contrib.auth import authenticate, login as django_login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Sum, Q
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
+from django.template.loader import get_template
 
+from .google_calendar.auth import build_flow, save_token, load_token
+from .google_calendar.calendar_api import create_event
 
 from .forms import (
     RegisterFormStep1, RegisterFormStep2, RegisterFormStep3,
-    RegisterFormStep4, RegisterEmpresaForm
+    RegisterFormStep4, RegisterEmpresaForm, CalificacionForm
 )
 
 from usuarios.models import (
@@ -271,7 +279,6 @@ def register_four(request):
                     'dni': dni,
                     'direccion': request.session.get('direccion', ''),
                     'fecha_nacimiento': None,
-                    'sexo': '',
                     'tipo_usuario': tipo,
                     'habilitado': True,
                 }
@@ -303,6 +310,8 @@ def register_four(request):
 
             if not profile.fecha_registro:
                 profile.fecha_registro = now()
+                
+            print(">>> Guardando profile.redes_sociales con:", profile.redes_sociales)
             profile.save()
 
             messages.success(request, 'Registro completado con éxito. Ahora puedes iniciar sesión.')
@@ -331,12 +340,12 @@ def perfil(request):
 
         trabajos_completados = trabajos.filter(estado=True)
         trabajos_activos = trabajos.filter(estado=False)
-        calificacion_promedio = Calificacion.objects.filter(id_usuario=usuario_db).aggregate(promedio=Avg('calificacion'))['promedio'] or 0
+        calificacion_promedio = Calificacion.objects.filter(id_usuario=usuario_db).aggregate(promedio=Avg('puntuacion'))['promedio'] or 0
         inicio_mes = datetime.now().replace(day=1)
         ingresos_mes = trabajos_completados.filter(fecha_fin__gte=inicio_mes).aggregate(total=Sum('sueldo'))['total'] or 0
 
         total_completados = trabajos_completados.count()
-        satisfechos = Calificacion.objects.filter(id_usuario=usuario_db, calificacion__gte=4).count()
+        satisfechos = Calificacion.objects.filter(id_usuario=usuario_db, puntuacion__gte=4).count()
         porcentaje_satisfechos = (satisfechos / total_completados * 100) if total_completados else 0
 
         actividades = ActividadReciente.objects.filter(usuario=usuario_db).order_by('-fecha')[:5]
@@ -344,7 +353,7 @@ def perfil(request):
         habilidades_usuario = UsuarioHabilidad.objects.filter(id_usuario=usuario_db).select_related('id_habilidad')
         nombres_habilidades = [uh.id_habilidad.nombre for uh in habilidades_usuario]
         certificaciones = Certificacion.objects.filter(usuario=usuario_db)
-        calificaciones = Calificacion.objects.filter(id_usuario=usuario_db).select_related('id_empleador__id_usuario')
+        calificaciones = Calificacion.objects.filter(id_usuario=usuario_db).select_related('autor')
 
         context = {
             'usuario': usuario_db,
@@ -373,6 +382,20 @@ def perfil(request):
             'actividades': actividades,
         }
 
+        token_info = None
+        creds = load_token(request.user.id)
+        if creds:
+            token_info = {
+                'connected': True,
+                'expires': creds.expiry,
+                'email': creds.id_token.get('email') if creds.id_token else '',
+            }
+        else:
+            token_info = {'connected': False}
+            
+        context['token_info'] = token_info
+
+        
         return render(request, 'usuarios/perfil.html', context)
 
     except Usuario.DoesNotExist:
@@ -394,6 +417,44 @@ def dashboard(request):
     except Usuario.DoesNotExist:
         messages.error(request, "No se encontró tu perfil.")
         return redirect('trabajo_llamkay:home')
+    
+    
+# --- EXPORTAR PORTAFOLIO ---
+
+@login_required
+def exportar_portafolio_pdf(request):
+    try:
+        usuario_db = Usuario.objects.get(user=request.user)
+        profile = Profile.objects.get(user=request.user)
+        
+        postulaciones = Postulacion.objects.filter(id_usuario=usuario_db).values_list('id_oferta', flat=True)
+        trabajos = Ofertatrabajo.objects.filter(id_oferta__in=postulaciones)
+        certificaciones = Certificacion.objects.filter(usuario=usuario_db)
+
+        # Renderizar HTML
+        template = get_template('usuarios/portafolio_pdf.html')
+        context = {
+            'usuario': usuario_db,
+            'profile': profile,
+            'trabajos': trabajos,
+            'certificaciones': certificaciones,
+        }
+        html = template.render(context)
+
+        # Crear PDF en memoria
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="portafolio.pdf"'
+        
+        pisa_status = pisa.CreatePDF(BytesIO(html.encode("utf-8")), dest=response)
+        if pisa_status.err:
+            return HttpResponse('⚠️ Error al generar el PDF', status=500)
+        
+        return response
+
+    except Exception as e:
+        print("Error al exportar portafolio:", e)
+        return HttpResponse("Error interno al generar el PDF", status=500)
+
 
 # --- ACTUALIZAR PERFIL ---
 
@@ -439,6 +500,95 @@ def actualizar_perfil(request):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+
+# --- CALIFICAR USUARIO ---
+
+@login_required
+def calificar_usuario(request, usuario_id):
+    objetivo = get_object_or_404(Usuario, pk=usuario_id)
+    if objetivo == request.user.usuario:        # evita auto‑calificarse
+        messages.error(request, "No puedes calificarte a ti mismo.")
+        return redirect('usuarios:perfil_publico', usuario_id)
+
+    instancia, _ = Calificacion.objects.get_or_create(
+        id_usuario=objetivo,
+        autor=request.user.usuario
+    )
+
+    if request.method == 'POST':
+        form = CalificacionForm(request.POST, instance=instancia)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "¡Gracias por tu calificación!")
+            return redirect('usuarios:perfil_publico', usuario_id)
+    else:
+        form = CalificacionForm(instance=instancia)
+
+    return render(request, 'usuarios/calificar.html', {
+        'objetivo': objetivo,
+        'form': form
+    })
+
+
+@login_required
+def buscar_usuarios(request):
+    q = request.GET.get('q', '').strip()
+    resultados = []
+    if q:
+        resultados = Usuario.objects.filter(
+            Q(nombres__icontains=q) | Q(apellidos__icontains=q) |
+            Q(profile__habilidades__icontains=q)
+        ).distinct()
+    return render(request, 'usuarios/buscar.html', {
+        'query': q,
+        'resultados': resultados,
+    })
+
+
+# --- API GOOGLE CALENDAR ---
+
+def conectar_google_calendar(request):
+    flow = build_flow()
+    auth_url, _ = flow.authorization_url(prompt='consent', access_type='offline', include_granted_scopes='true')
+    return redirect(auth_url)
+
+
+def oauth2callback(request):
+    """
+    Google redirige aquí después de que el usuario concede permiso.
+    Intercambiamos el 'code' por el access/refresh token y lo guardamos.
+    """
+    flow = build_flow()  # usa las mismas credenciales y scopes
+    flow.fetch_token(authorization_response=request.build_absolute_uri())
+
+    creds = load_token(request.user.id)     # ya contiene access + refresh token
+    save_token(creds)             # lo guardamos (en token.pickle, o cámbialo a BD)
+
+    # Redirige a donde prefieras tras la conexión exitosa
+    return redirect('usuarios:dashboard')   # o 'evento_demo', etc.
+
+
+def crear_evento_demo(request):
+    inicio = datetime.now().isoformat()
+    fin = (datetime.now() + timedelta(hours=1)).isoformat()
+
+    evento = create_event("🎉 Evento de prueba", inicio, fin)
+    return JsonResponse({'id': evento.get('id'), 'status': 'creado'})
+
+
+@login_required
+def desconectar_google(request):
+    token_path = os.path.join('credenciales', f'token_{request.user.id}.pickle')
+
+    if os.path.exists(token_path):
+        os.remove(token_path)
+        messages.success(request, "Conexión con Google Calendar eliminada.")
+    else:
+        messages.info(request, "No hay una conexión activa que eliminar.")
+
+    return redirect('usuarios:perfil')
+
 
 
 # --- PÁGINAS ESTÁTICAS ---

@@ -8,6 +8,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# Modelos completos del módulo de usuarios (versión extendida)
+# Incluye: autenticación personalizada, antecedentes, perfil público, Google Calendar,
+# recordatorios, recomendaciones, historial de eventos, eliminación lógica y más.
+
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.text import slugify
+from django.utils import timezone
+
 
 class Departamento(models.Model):
     id_departamento = models.IntegerField(primary_key=True)
@@ -45,7 +54,7 @@ class Comunidad(models.Model):
 
     class Meta:
         db_table = 'comunidad'
-        
+
 
 class Usuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil') #para mantener la personalizacion
@@ -60,13 +69,118 @@ class Usuario(models.Model):
     email = models.CharField(blank=True, null=True)
     clave = models.TextField(blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
-    sexo = models.CharField(blank=True, null=True)
     tipo_usuario = models.TextField(blank=True, null=True)  # This field type is a guess.
     id_comunidad = models.ForeignKey(Comunidad, models.DO_NOTHING, db_column='id_comunidad', blank=True, null=True)
     habilitado = models.BooleanField(blank=True, null=True)
+    
+    genero = models.CharField(
+        max_length=10,
+        choices=[("masculino", "Masculino"), ("femenino", "Femenino"), ("otro", "Otro")],
+        default="otro"
+    )
+
+    # Nuevos campos extendidos
+    calendario_token = models.TextField(null=True, blank=True, verbose_name="Token de Google Calendar")
+    estado_conexion_calendario = models.CharField(
+        max_length=20,
+        default="desconectado",
+        choices=[
+            ("desconectado", "Desconectado"),
+            ("conectado", "Conectado"),
+            ("expirado", "Expirado")
+        ],
+        verbose_name="Estado de conexión con Google Calendar"
+    )
+    perfil_publico_activo = models.BooleanField(default=False, verbose_name="Perfil público activado")
+    biografia_flexible = models.TextField(blank=True, null=True, verbose_name="Descripción libre del usuario")
+    eliminado_en = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de eliminación lógica")
+
+    def obtener_slug_publico(self):
+        return slugify(f"{self.username}-{self.id}")
+
+    def esta_eliminado(self):
+        return self.eliminado_en is not None
+
+    def eliminar_logicamente(self):
+        self.eliminado_en = timezone.now()
+        self.save()
 
     class Meta:
         db_table = 'usuario'
+
+
+class PerfilPublico(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name="perfil_publico")
+    slug = models.SlugField(unique=True)
+    resumen = models.TextField(verbose_name="Resumen público")
+    habilidades = models.JSONField(default=list, verbose_name="Lista de habilidades")
+    mostrar_email = models.BooleanField(default=False)
+    mostrar_telefono = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self.usuario.obtener_slug_publico()
+        super().save(*args, **kwargs)
+
+
+class Recomendacion(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="recomendaciones")
+    autor = models.CharField(max_length=255, verbose_name="Nombre del recomendante")
+    comentario = models.TextField(verbose_name="Comentario")
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de emisión")
+    visible = models.BooleanField(default=True, verbose_name="¿Mostrar públicamente?")
+
+
+class ConfiguracionRecordatorio(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+    canal = models.CharField(
+        max_length=10,
+        choices=[
+            ("push", "Notificación Push"),
+            ("email", "Correo electrónico"),
+            ("sms", "Mensaje de texto")
+        ],
+        default="push",
+        verbose_name="Canal preferido"
+    )
+    anticipacion_horas = models.PositiveIntegerField(default=24, verbose_name="Horas de anticipación")
+    habilitado = models.BooleanField(default=True, verbose_name="¿Recordatorios habilitados?")
+
+
+class RegistroEvento(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="eventos")
+    tipo_evento = models.CharField(max_length=100, verbose_name="Tipo de evento")
+    fecha_hora = models.DateTimeField(verbose_name="Fecha y hora")
+    canal = models.CharField(max_length=10, verbose_name="Canal utilizado")
+    estado = models.CharField(max_length=20, default="enviado", verbose_name="Estado del evento")
+
+
+class SolicitudEliminacion(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    tipo = models.CharField(
+        max_length=20,
+        choices=[
+            ("cuenta", "Eliminar cuenta completa"),
+            ("historial", "Eliminar solo historial")
+        ],
+        verbose_name="Tipo de solicitud"
+    )
+    fecha_solicitud = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de solicitud")
+    confirmada = models.BooleanField(default=False, verbose_name="¿Confirmada por el usuario?")
+
+
+class RegistroError(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
+    modulo = models.CharField(max_length=50, verbose_name="Módulo")
+    mensaje = models.TextField(verbose_name="Mensaje del error")
+    nivel = models.CharField(
+        max_length=10,
+        choices=[("WARNING", "Advertencia"), ("ERROR", "Error")],
+        default="ERROR",
+        verbose_name="Nivel de severidad"
+    )
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Fecha del evento")
+
 
 class ActividadReciente(models.Model):
     usuario = models.ForeignKey('Usuario', models.DO_NOTHING)
@@ -89,15 +203,15 @@ class Avisos(models.Model):
 
 
 class Calificacion(models.Model):
-    id_calificacion = models.IntegerField(primary_key=True)
-    id_usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='id_usuario', blank=True, null=True)
-    id_empleador = models.ForeignKey('Empleador', models.DO_NOTHING, db_column='id_empleador', blank=True, null=True)
-    calificacion = models.IntegerField(blank=True, null=True)
-    comentario = models.TextField(blank=True, null=True)
-    fecha = models.DateField(blank=True, null=True)
+    id_usuario = models.ForeignKey(Usuario, related_name='calificaciones_recibidas', on_delete=models.CASCADE)
+    autor = models.ForeignKey(Usuario, related_name='calificaciones_enviadas', on_delete=models.SET_NULL, null=True, blank=True)
+
+    puntuacion = models.PositiveSmallIntegerField()
+    comentario = models.TextField(blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'calificacion'
+        unique_together = ('id_usuario', 'autor')  # Evita duplicados por usuario que califica
 
 
 class Categoriatrabajo(models.Model):
@@ -212,6 +326,9 @@ class Profile(models.Model):
     id_departamento = models.ForeignKey(Departamento, models.DO_NOTHING, db_column='id_departamento', blank=True, null=True)
     categorias = models.TextField(blank=True, null=True)
     habilidades = models.TextField(blank=True, null=True)
+    ocupacion = models.CharField(max_length=100)
+    experiencia = models.PositiveIntegerField(default=0, verbose_name="Años de experiencia")
+    portafolio_url = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'profile'

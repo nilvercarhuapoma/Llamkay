@@ -1,7 +1,7 @@
 # usuarios/forms.py
 from django import forms
 from usuarios.models import Usuario, Profile 
-from usuarios.models import Departamento, Provincia, Distrito, Certificacion
+from usuarios.models import Departamento, Provincia, Distrito, Certificacion, Calificacion
 from usuarios.widgets import MultiFileInput  
 
 
@@ -200,3 +200,13 @@ email = forms.EmailField(
     label="Correo electrónico",
     widget=forms.EmailInput(attrs={'placeholder': 'ejemplo@correo.com'}),
 )
+
+
+class CalificacionForm(forms.ModelForm):
+    class Meta:
+        model  = Calificacion
+        fields = ['puntuacion', 'comentario']
+        widgets = {
+            'puntuacion': forms.NumberInput(attrs={'min': 1, 'max': 5}),
+            'comentario': forms.Textarea(attrs={'rows': 3})
+        }

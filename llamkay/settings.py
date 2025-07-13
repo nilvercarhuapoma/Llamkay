@@ -132,6 +132,12 @@ USE_I18N = True
 USE_TZ = True
 
 
+# Redirige a tu vista de login personalizada
+LOGIN_URL = '/usuarios/login/'
+# Redirige aquí después de iniciar sesión correctamente
+LOGIN_REDIRECT_URL = '/usuarios/dashboard/'
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
