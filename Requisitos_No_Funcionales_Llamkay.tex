@@ -1,0 +1,1123 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{times}
+\usepackage{setspace}
+\usepackage{natbib}
+\usepackage{microtype}
+\usepackage{ltxtable}
+\usepackage{tabularx}
+
+% Configuracion para manejo de imagenes
+\graphicspath{{./}}
+\DeclareGraphicsExtensions{.png,.jpg,.jpeg,.pdf}
+
+% Configuracion para evitar separacion de palabras con guiones
+\usepackage{ragged2e}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\sloppy
+
+% Configuracion de pagina segun APA 7ma edicion
+\geometry{
+    top=2.54cm,
+    bottom=2.54cm,
+    left=2.54cm,
+    right=2.54cm
+}
+\doublespacing
+\setlength{\parindent}{1.27cm}
+
+% Configuracion de fuente Times New Roman 12pt
+\renewcommand{\rmdefault}{ptm}
+
+% Configuraciones adicionales para mejor texto
+\tolerance=1000
+\emergencystretch=5pt
+\widowpenalty=10000
+\clubpenalty=10000
+
+% Configuracion de pie de pagina
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[L]{\textup{REQUISITOS NO FUNCIONALES LLAMKAY.PE}}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Configuracion de hipervinculos segun APA
+\hypersetup{
+    colorlinks=false,
+    linkbordercolor=white,
+    urlbordercolor=white,
+    citebordercolor=white,
+    pdfborder={0 0 0},
+    unicode=true,
+    pdfencoding=auto
+}
+
+% Configuracion de titulos segun APA 7ma edicion
+\titleformat{\section}{\centering\normalfont\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalfont\bfseries\itshape}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection}{1em}{}
+
+% Configuracion de listas
+\setlist[itemize]{leftmargin=1.27cm}
+\setlist[enumerate]{leftmargin=1.27cm}
+
+% Configuracion de tablas para mejor ajuste de texto
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\renewcommand{\arraystretch}{1.2}
+
+% Configuracion para mantener tablas unidas
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{0pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{\fill}
+
+\begin{document}
+
+% ============================================================================
+% PORTADA UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA
+% ============================================================================
+\begin{titlepage}
+    \centering
+
+    % Informacion de la universidad
+    \vspace*{0.5cm}
+
+    {\bfseries\normalsize UNIVERSIDAD NACIONAL AGRARIA DE LA SELVA\par}
+    {\bfseries\small FACULTAD DE INGENIERIA EN INFORMATICA Y SISTEMAS\par}
+    {\bfseries\small ESCUELA PROFESIONAL DE INGENIERIA EN INFORMATICA Y SISTEMAS\par}
+
+    \vspace{0.8cm}
+
+    % Logos (usar imágenes disponibles)
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=2.2cm]{logounas.jpeg}
+        %{\small [LOGO FISS]}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=2.8cm]{logofiis.jpeg}
+        %{\small [LOGO UNAS]}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.3\textwidth}
+        \centering
+        \includegraphics[width=2.2cm]{logollamkay.jpg}
+        % {\small [LOGO LLAMKAY]}
+    \end{minipage}
+
+    \vspace{1.5cm}
+
+    % Titulo del documento
+    {\bfseries\large DOCUMENTACION NO FUNCIONAL\par}
+
+    \vspace{1.5cm}
+
+    % Informacion del curso y docente
+    \begin{flushleft}
+        \hspace{2cm}\textbf{IS040503A:} \hspace{1.2cm}  Ingenieria de Requisitos \\[0.2cm]
+        \hspace{2cm}\textbf{DOCENTE:} \hspace{0.7cm} Garcia Villegas, Christian\\[0.2cm]
+        \hspace{2cm}\textbf{CICLO:} \hspace{1.3cm} Quinto ciclo - 2025-I \\[0.2cm]
+    \end{flushleft}
+
+    \vspace{1cm}
+
+    % Autores
+    \begin{flushleft}
+        \hspace{2cm}\textbf{AUTORES:}\\[0.2cm]
+        \hspace{3cm} Contreras Coronel, Gianmarco Steve \\[0.1cm]
+        \hspace{3cm} Carhuapoma Peña, Nilver Leimer \\[0.1cm]
+        \hspace{3cm} Borromeo Avila, Cynthia Alexandra \\[0.1cm]
+        \hspace{3cm} Romero Rengifo, Jorge Faris \\[0.1cm]
+    \end{flushleft}
+
+    \vfill
+
+    % Lugar y fecha
+    {\bfseries\normalsize TINGO MARIA - PERU\par}
+    {\normalsize 12 de julio de 2025\par}
+
+\end{titlepage}
+
+% ============================================================================
+% INDICE
+% ============================================================================
+\newpage
+\setcounter{page}{2}
+\tableofcontents
+\newpage
+
+% ============================================================================
+% 1. CUADRO DE VERSIONES
+% ============================================================================
+\section{Cuadro de Versiones}
+
+\begin{longtable}{|p{2cm}|p{2.5cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{Version} & \textbf{Fecha} & \textbf{Autor} & \textbf{Descripcion de Cambios} \\
+\hline
+\endhead
+
+1.0 & 12/07/2025 & Equipo Llamkay & Version inicial del documento de requisitos no funcionales \\
+\hline
+1.1 & 12/07/2025 & Equipo Llamkay & Reorganizacion segun estructura ISO 25010 y agregado de secciones especializadas \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 2. INTRODUCCION
+% ============================================================================
+\section{Introduccion}
+
+\subsection{Presentacion del Sistema}
+
+\hspace{1.27cm}Llamkay.pe es una plataforma web desarrollada en Django que conecta empleadores con trabajadores en comunidades rurales del Peru. El sistema facilita la publicacion y busqueda de ofertas laborales temporales, enfocandose en sectores como agricultura, construccion y servicios locales.
+
+\subsection{Proposito del Documento}
+
+\hspace{1.27cm}Este documento define los requisitos no funcionales del sistema Llamkay.pe, estableciendo los criterios de calidad, rendimiento, seguridad y usabilidad que debe cumplir la plataforma para garantizar una experiencia optima a sus usuarios.
+
+\subsection{Publico Objetivo}
+
+\hspace{1.27cm}El presente documento está dirigido a:
+
+\begin{itemize}
+    \item Desarrolladores del sistema
+    \item Arquitectos de software
+    \item Testers y equipos de QA
+    \item Administradores de sistema
+    \item Stakeholders del proyecto
+\end{itemize}
+
+% ============================================================================
+% 3. VISION DEL PROYECTO
+% ============================================================================
+\section{Vision del Proyecto}
+
+\hspace{1.27cm}Ser la plataforma lider en la conexion de oportunidades laborales temporales en comunidades rurales del Peru, promoviendo el desarrollo economico local mediante un sistema web seguro, accesible y facil de usar que permita a empleadores y trabajadores encontrarse de manera eficiente, contribuyendo asi a la reduccion de la migracion rural-urbana y al fortalecimiento de las economias locales.
+
+% ============================================================================
+% 4. OBJETIVOS DEL PROYECTO
+% ============================================================================
+\section{Objetivos del Proyecto}
+
+\subsection{Objetivo General}
+
+\hspace{1.27cm}Desarrollar una plataforma web robusta y escalable que facilite la conexion entre empleadores y trabajadores en comunidades rurales, mejorando las oportunidades de empleo temporal y promoviendo el desarrollo economico local.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}
+    \item Implementar un sistema de registro y autenticacion seguro para diferentes tipos de usuarios
+    \item Desarrollar un modulo de gestion de ofertas laborales con filtros geograficos detallados
+    \item Crear un sistema de comunicacion interno entre empleadores y trabajadores
+    \item Establecer un sistema de calificaciones y reputacion para usuarios
+    \item Garantizar la accesibilidad desde dispositivos moviles y conexiones de baja velocidad
+    \item Implementar medidas de seguridad para proteger los datos de los usuarios
+\end{itemize}
+
+% ============================================================================
+% 5. ALCANCE DEL DOCUMENTO
+% ============================================================================
+\section{Alcance del Documento}
+
+\subsection{Incluye}
+
+\hspace{1.27cm}Este documento contempla los siguientes aspectos:
+
+\begin{itemize}
+    \item Requisitos de rendimiento del sistema web
+    \item Especificaciones de usabilidad y experiencia de usuario
+    \item Requerimientos de seguridad y proteccion de datos
+    \item Criterios de compatibilidad con navegadores y dispositivos
+    \item Requisitos de mantenibilidad y escalabilidad
+    \item Especificaciones de disponibilidad del sistema
+\end{itemize}
+
+\subsection{Excluye}
+
+\hspace{1.27cm}Este documento no incluye:
+
+\begin{itemize}
+    \item Requisitos funcionales especificos
+    \item Especificaciones de hardware del servidor
+    \item Detalles de implementacion tecnica
+    \item Procesos de negocio especificos
+\end{itemize}
+
+% ============================================================================
+% 6. HERRAMIENTAS Y TECNOLOGIAS UTILIZADAS
+% ============================================================================
+\section{Herramientas y Tecnologias Utilizadas}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Término/Sigla} & \textbf{Descripción} \\
+\hline
+\endhead
+
+RNF & Requisito No Funcional \\
+\hline
+UI & Interfaz de Usuario (User Interface) \\
+\hline
+UX & Experiencia de Usuario (User Experience) \\
+\hline
+CRUD & Crear, Leer, Actualizar, Eliminar \\
+\hline
+WCAG & Pautas de Accesibilidad al Contenido Web \\
+\hline
+SSL & Secure Socket Layer \\
+\hline
+CSRF & Cross-Site Request Forgery \\
+\hline
+XSS & Cross-Site Scripting \\
+\hline
+API & Interfaz de Programacion de Aplicaciones \\
+\hline
+GDPR & Reglamento General de Proteccion de Datos \\
+\hline
+SLA & Acuerdo de Nivel de Servicio \\
+\hline
+CDN & Red de Distribucion de Contenido \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 11. REQUISITOS NO FUNCIONALES
+% ============================================================================
+\section{Requisitos No Funcionales}
+
+\subsection{Usabilidad y Accesibilidad}
+
+\begin{longtable}{|P{2cm}|P{10cm}|P{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-01 & La aplicacion debe ser facil de usar para personas sin conocimientos tecnicos avanzados. & Alta \\
+\hline
+RNF-02 & Los botones deben ser grandes, el texto debe ser legible y debe haber buen contraste de colores. & Alta \\
+\hline
+RNF-03 & Debe incluir un boton de ayuda o tutorial para guiar a los usuarios. & Media \\
+\hline
+RNF-04 & Los usuarios deben poder buscar trabajos usando filtros basados en sus habilidades. & Alta \\
+\hline
+RNF-05 & Debe tener texto grande y ayudas visuales para personas con dificultades de vision. & Media \\
+\hline
+RNF-06 & Debe incluir una funcion de ayuda especial para personas que no saben usar tecnologia. & Alta \\
+\hline
+RNF-07 & La interfaz debe parecerse a los anuncios fisicos de trabajo que la gente conoce. & Media \\
+\hline
+RNF-08 & Debe mostrar estadisticas personales como cuantas veces has aplicado a trabajos. & Media \\
+\hline
+RNF-09 & Debe permitir ver como se ve tu perfil antes de hacerlo publico. & Media \\
+\hline
+RNF-10 & Debe recordar a los usuarios completar su perfil si falta informacion. & Media \\
+\hline
+RNF-11 & Debe dar recomendaciones de trabajos basadas en el perfil de cada persona. & Media \\
+\hline
+RNF-12 & Debe tener soporte para idiomas o dialectos locales de las comunidades. & Media \\
+\hline
+RNF-13 & Debe incluir modo oscuro para personas con problemas de vision. & Baja \\
+\hline
+RNF-14 & Debe estar diseñado para personas con diferentes capacidades fisicas. & Media \\
+\hline
+RNF-15 & Debe incluir ayuda por chat o asistente virtual para resolver dudas. & Media \\
+\hline
+\end{longtable}
+
+\subsection{Seguridad y Confianza}
+
+\begin{longtable}{|p{2cm}|p{10cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-16 & Debe proteger la informacion personal de los usuarios (nombres, telefonos, direcciones). & Critica \\
+\hline
+RNF-17 & Debe permitir denunciar trabajos sospechosos o usuarios que se portan mal. & Alta \\
+\hline
+RNF-18 & Debe verificar a los usuarios por mensaje de texto o correo electronico. & Alta \\
+\hline
+RNF-19 & Debe revisar los antecedentes penales de las personas que se registran. & Alta \\
+\hline
+RNF-20 & Debe permitir verificar la identidad de manera opcional para mayor confianza. & Media \\
+\hline
+RNF-21 & Debe tener un sistema para denunciar comportamientos inapropiados. & Alta \\
+\hline
+RNF-22 & Debe mostrar filtros de confianza como foto verificada, telefono confirmado. & Media \\
+\hline
+RNF-23 & Debe avisar si un empleador tiene reportes negativos de otros trabajadores. & Alta \\
+\hline
+RNF-24 & Debe permitir reportar contenido ofensivo o mentiroso en las publicaciones. & Media \\
+\hline
+RNF-25 & Debe usar autenticacion de dos factores para mayor seguridad de las cuentas. & Media \\
+\hline
+RNF-26 & Todas las contraseñas deben estar encriptadas con algoritmos seguros. & Critica \\
+\hline
+RNF-27 & Debe implementar proteccion CSRF en todos los formularios del sistema. & Critica \\
+\hline
+RNF-28 & Debe tener control de acceso basado en roles (trabajador, empleador, empresa). & Alta \\
+\hline
+\end{longtable}
+
+\subsection{Etica y Legalidad}
+
+\begin{longtable}{|p{2cm}|p{10cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-29 & No debe discriminar a las personas por su raza, genero, edad o religion. & Critica \\
+\hline
+RNF-30 & Debe tener politicas claras de respeto y convivencia entre usuarios. & Alta \\
+\hline
+RNF-31 & Debe pedir consentimiento claro antes de usar los datos personales. & Alta \\
+\hline
+RNF-32 & Debe prohibir completamente el trabajo infantil en la plataforma. & Critica \\
+\hline
+RNF-33 & Debe aclarar que algunos trabajos pueden ser informales (sin contrato fijo). & Media \\
+\hline
+RNF-34 & Debe permitir eliminar la cuenta y el historial en cualquier momento. & Alta \\
+\hline
+\end{longtable}
+
+\subsection{Rendimiento y Disponibilidad}
+
+\begin{longtable}{|p{2cm}|p{10cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-35 & Debe mostrar trabajos actualizados en tiempo real y eliminar los vencidos. & Alta \\
+\hline
+RNF-36 & Debe tener una seccion de trabajos populares para encontrar mas rapido. & Media \\
+\hline
+RNF-37 & Debe enviar resumenes diarios o semanales de nuevas oportunidades de trabajo. & Media \\
+\hline
+RNF-38 & Las transiciones entre pantallas deben ser rapidas (menos de 1 segundo). & Media \\
+\hline
+RNF-39 & Debe funcionar bien en conexiones de internet lentas del campo. & Alta \\
+\hline
+\end{longtable}
+
+\subsection{Funcionalidades Educativas}
+
+\begin{longtable}{|p{2cm}|p{10cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-40 & Debe tener una seccion educativa sobre como mejorar el perfil profesional. & Media \\
+\hline
+RNF-41 & Debe enseñar consejos para entrevistas de trabajo y presentacion personal. & Media \\
+\hline
+RNF-42 & Debe permitir a los empleadores editar las ofertas de trabajo despues de publicarlas. & Media \\
+\hline
+RNF-43 & Debe recibir sugerencias de mejora de los usuarios para la plataforma. & Baja \\
+\hline
+\end{longtable}
+
+\subsection{Sistema de Calificaciones}
+
+\begin{longtable}{|p{2cm}|p{10cm}|p{2cm}|}
+\hline
+\textbf{ID} & \textbf{Descripción del Requisito} & \textbf{Prioridad} \\
+\hline
+\endhead
+
+RNF-44 & Debe tener un sistema donde empleadores y trabajadores se califiquen mutuamente. & Alta \\
+\hline
+RNF-45 & Debe mostrar el promedio de calificaciones de cada usuario en su perfil. & Alta \\
+\hline
+RNF-46 & Debe permitir dejar comentarios junto con las calificaciones numericas. & Media \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 12. MODULOS DE LA PLATAFORMA
+% ============================================================================
+\section{Modulos de la Plataforma}
+
+\subsection{Modulos Principales}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Modulo} & \textbf{Descripcion y Funcionalidades} \\
+\hline
+\endhead
+
+usuarios & Gestion de perfiles de trabajadores y empleadores con autenticacion, verificacion de identidad y manejo de sesiones \\
+\hline
+trabajos & Publicacion y gestion de ofertas laborales con filtros geograficos, busqueda por habilidades y estado de ofertas \\
+\hline
+chats & Sistema de comunicacion interna entre empleadores y trabajadores con mensajeria segura \\
+\hline
+trabajo\_llamkay & Modulo complementario para funcionalidades especificas de la plataforma \\
+\hline
+llamkay & Configuracion principal del proyecto Django con settings, URLs y middleware de seguridad \\
+\hline
+\end{longtable}
+
+\subsection{Funcionalidades Transversales}
+
+\begin{itemize}
+    \item \textbf{Sistema de Autenticacion:} Registro, login, verificacion por correo
+    \item \textbf{Sistema de Calificaciones:} Evaluacion mutua entre usuarios
+    \item \textbf{Gestion de Archivos:} Subida y verificacion de documentos PDF
+    \item \textbf{Filtros Geograficos:} Busqueda por region, provincia y distrito
+    \item \textbf{Sistema de Reportes:} Denuncias y moderacion de contenido
+\end{itemize>
+
+% ============================================================================
+% 13. MATRIZ DE PRIORIDADES DE REQUISITOS NO FUNCIONALES
+% ============================================================================
+\section{Matriz de Prioridades de Requisitos No Funcionales}
+\section{Matriz de Prioridades}
+
+\begin{longtable}{|p{2cm}|p{6cm}|p{2cm}|p{4cm}|}
+\hline
+\textbf{ID} & \textbf{Requisito} & \textbf{Prioridad} & \textbf{Justificacion} \\
+\hline
+\endhead
+
+RNF-16 & Proteger informacion personal & Critica & Seguridad de datos sensibles \\
+\hline
+RNF-26 & Encriptacion de contraseñas & Critica & Proteccion de credenciales \\
+\hline
+RNF-27 & Proteccion CSRF & Critica & Prevencion de ataques web \\
+\hline
+RNF-29 & No discriminacion & Critica & Principios eticos fundamentales \\
+\hline
+RNF-32 & Prohibicion trabajo infantil & Critica & Cumplimiento legal obligatorio \\
+\hline
+RNF-01 & Interfaz facil de usar & Alta & Adopcion por usuarios rurales \\
+\hline
+RNF-02 & Botones grandes y legibles & Alta & Accesibilidad para todos \\
+\hline
+RNF-04 & Filtros por habilidades & Alta & Funcionalidad clave del sistema \\
+\hline
+RNF-17 & Sistema de denuncias & Alta & Seguridad de la comunidad \\
+\hline
+RNF-18 & Verificacion de usuarios & Alta & Confianza en la plataforma \\
+\hline
+RNF-19 & Revision antecedentes & Alta & Seguridad de empleadores \\
+\hline
+RNF-21 & Sistema de reportes & Alta & Proteccion contra abusos \\
+\hline
+RNF-23 & Alertas sobre empleadores & Alta & Transparencia y seguridad \\
+\hline
+RNF-28 & Control acceso por roles & Alta & Funcionalidad del sistema \\
+\hline
+RNF-30 & Politicas de respeto & Alta & Ambiente seguro de trabajo \\
+\hline
+RNF-31 & Consentimiento informado & Alta & Cumplimiento de privacidad \\
+\hline
+RNF-34 & Eliminar cuenta libremente & Alta & Derecho de los usuarios \\
+\hline
+RNF-35 & Trabajos en tiempo real & Alta & Relevancia de la informacion \\
+\hline
+RNF-39 & Funcionar en internet lento & Alta & Acceso en zonas rurales \\
+\hline
+RNF-44 & Sistema calificaciones & Alta & Confianza entre usuarios \\
+\hline
+RNF-45 & Mostrar calificaciones & Alta & Transparencia del sistema \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 14. REQUISITOS IDENTIFICADOS (TOTAL ELICITADOS)
+% ============================================================================
+\section{Requisitos Identificados (Total Elicitados)}
+
+\subsection{Distribucion por Categorias}
+
+\begin{longtable}{|p{4cm}|p{2cm}|p{2cm}|p{5cm}|}
+\hline
+\textbf{Categoria} & \textbf{Cantidad} & \textbf{Porcentaje} & \textbf{Caracteristica ISO 25010} \\
+\hline
+\endhead
+
+Rendimiento & 5 & 8.3\% & Eficiencia de Desempeño \\
+\hline
+Usabilidad & 11 & 18.3\% & Usabilidad \\
+\hline
+Seguridad & 18 & 30.0\% & Seguridad \\
+\hline
+Accesibilidad & 4 & 6.7\% & Usabilidad \\
+\hline
+Compatibilidad & 3 & 5.0\% & Compatibilidad \\
+\hline
+Disponibilidad & 3 & 5.0\% & Fiabilidad \\
+\hline
+Escalabilidad & 3 & 5.0\% & Eficiencia de Desempeño \\
+\hline
+Mantenibilidad & 13 & 21.7\% & Mantenibilidad/Adecuacion Funcional \\
+\hline
+\textbf{TOTAL} & \textbf{60} & \textbf{100\%} & - \\
+\hline
+\end{longtable}
+
+\subsection{Distribucion por Prioridad}
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{2cm}|p{6cm}|}
+\hline
+\textbf{Prioridad} & \textbf{Cantidad} & \textbf{Porcentaje} & \textbf{Descripcion} \\
+\hline
+\endhead
+
+Critica & 6 & 10.0\% & Seguridad de datos, proteccion legal \\
+\hline
+Alta & 24 & 40.0\% & Funcionalidades core, usabilidad esencial \\
+\hline
+Media & 28 & 46.7\% & Mejoras de experiencia, funcionalidades adicionales \\
+\hline
+Baja & 2 & 3.3\% & Caracteristicas opcionales \\
+\hline
+\textbf{TOTAL} & \textbf{60} & \textbf{100\%} & - \\
+\hline
+\end{longtable}
+
+\subsection{Estado de Implementacion Actualizado}
+
+\begin{itemize}
+    \item \textbf{Total requisitos identificados:} 60
+    \item \textbf{Completamente implementados:} 16 (26.7\%)
+    \item \textbf{Parcialmente implementados:} 12 (20.0\%)
+    \item \textbf{No implementados:} 32 (53.3\%)
+    \item \textbf{Cobertura actual:} 46.7\% (implementados + parciales)
+\end{itemize}
+
+% ============================================================================
+% 15. ESTADO ACTUAL DE IMPLEMENTACION
+% ============================================================================
+\section{Estado Actual de Implementacion}
+
+\subsection{Requisitos Completamente Implementados}
+\begin{itemize}
+    \item \textbf{RNF-01:} Interfaz facil de usar - Implementado con formularios intuitivos y navegacion clara
+    \item \textbf{RNF-02:} Botones grandes y legibles - Implementado en CSS con botones responsive
+    \item \textbf{RNF-04:} Filtros por habilidades - Implementado en el sistema de busqueda
+    \item \textbf{RNF-16:} Proteccion de datos personales - Implementado con manejo seguro de sesiones
+    \item \textbf{RNF-17:} Sistema de denuncias - Implementado con funciones de reporte
+    \item \textbf{RNF-18:} Verificacion de usuarios - Implementado con validacion por correo
+    \item \textbf{RNF-19:} Revision antecedentes - Implementado con verificacion de documentos PDF
+    \item \textbf{RNF-20:} Verificacion opcional identidad - Implementado con subida de documentos
+    \item \textbf{RNF-26:} Encriptacion contraseñas - Implementado con Django auth y bcrypt
+    \item \textbf{RNF-27:} Proteccion CSRF - Implementado en todos los formularios
+    \item \textbf{RNF-28:} Control acceso roles - Implementado con decoradores y permisos
+    \item \textbf{RNF-31:} Consentimiento informado - Implementado con checkbox en registro
+    \item \textbf{RNF-34:} Eliminar cuenta - Implementado con funciones de eliminacion de perfil
+    \item \textbf{RNF-35:} Trabajos tiempo real - Implementado con actualizacion dinamica
+    \item \textbf{RNF-44:} Sistema calificaciones - Implementado con modelo Calificacion
+    \item \textbf{RNF-45:} Mostrar calificaciones - Implementado en perfil de usuario
+\end{itemize}
+
+\subsection{Requisitos Parcialmente Implementados}
+\begin{itemize}
+    \item \textbf{RNF-03:} Boton de ayuda - Parcial: existe seccion ayuda pero falta tutorial interactivo
+    \item \textbf{RNF-05:} Ayudas visuales - Parcial: texto legible pero falta opciones de tamaño
+    \item \textbf{RNF-08:} Estadisticas personales - Parcial: muestra algunas metricas basicas
+    \item \textbf{RNF-09:} Vista previa perfil - Parcial: permite editar pero falta preview completo
+    \item \textbf{RNF-10:} Recordar completar perfil - Parcial: valida campos pero falta notificacion
+    \item \textbf{RNF-11:} Recomendaciones personalizadas - Parcial: filtros basicos implementados
+    \item \textbf{RNF-22:} Filtros de confianza - Parcial: verificacion basica sin badges visuales
+    \item \textbf{RNF-23:} Alertas empleadores - Parcial: sistema calificaciones sin alertas automaticas
+    \item \textbf{RNF-29:} No discriminacion - Parcial: no hay filtros discriminatorios pero falta politica explicita
+    \item \textbf{RNF-38:} Transiciones rapidas - Parcial: CSS animations pero falta optimizacion completa
+    \item \textbf{RNF-39:} Internet lento - Parcial: responsive pero falta optimizacion especifica
+    \item \textbf{RNF-42:} Editar ofertas - Parcial: funcionalidad basica implementada
+\end{itemize}
+
+\subsection{Requisitos No Implementados}
+\begin{itemize}
+    \item \textbf{RNF-06:} Ayuda para personas sin conocimientos tecnicos
+    \item \textbf{RNF-07:} Interfaz estilo anuncios fisicos
+    \item \textbf{RNF-12:} Soporte idiomas locales
+    \item \textbf{RNF-13:} Modo oscuro
+    \item \textbf{RNF-14:} Diseño para diferentes capacidades
+    \item \textbf{RNF-15:} Ayuda por chat o asistente virtual
+    \item \textbf{RNF-21:} Sistema reportes avanzado
+    \item \textbf{RNF-24:} Reportar contenido ofensivo
+    \item \textbf{RNF-25:} Autenticacion dos factores
+    \item \textbf{RNF-30:} Politicas respeto explicitas
+    \item \textbf{RNF-32:} Prohibicion trabajo infantil explicita
+    \item \textbf{RNF-33:} Aclaracion trabajo informal
+    \item \textbf{RNF-36:} Seccion trabajos populares
+    \item \textbf{RNF-37:} Resumenes periodicos
+    \item \textbf{RNF-40:} Seccion educativa mejora perfil
+    \item \textbf{RNF-41:} Consejos entrevistas
+    \item \textbf{RNF-43:} Sugerencias mejora plataforma
+    \item \textbf{RNF-46:} Comentarios en calificaciones
+\end{itemize}
+
+\subsection{Resumen Estadistico}
+\begin{itemize}
+    \item \textbf{Total requisitos identificados:} 46
+    \item \textbf{Completamente implementados:} 16 (35\%)
+    \item \textbf{Parcialmente implementados:} 12 (26\%)
+    \item \textbf{No implementados:} 18 (39\%)
+    \item \textbf{Cobertura total:} 61\% (implementados + parciales)
+\end{itemize}
+
+% ============================================================================
+% 16. CONCLUSIONES
+% ============================================================================
+\section{Conclusiones}
+
+\hspace{1.27cm}El analisis de requisitos no funcionales de Llamkay.pe revela los siguientes hallazgos clave:
+
+\begin{itemize}
+    \item \textbf{Enfoque en Seguridad:} El 30\% de los requisitos se centran en seguridad, reflejando la criticidad de la proteccion de datos en plataformas laborales rurales
+    
+    \item \textbf{Prioridad en Usabilidad:} El 24.3\% de requisitos abordan usabilidad y accesibilidad, esencial para usuarios con limitada experiencia tecnologica
+    
+    \item \textbf{Cumplimiento ISO 25010:} La clasificacion segun el estandar internacional permite una evaluacion sistematica de calidad
+    
+    \item \textbf{Brecha de Implementacion:} Con 53.3\% de requisitos no implementados, existe una oportunidad significativa de mejora
+    
+    \item \textbf{Metodologia Agil:} El uso de Scrum facilita la priorizacion e implementacion iterativa de requisitos criticos
+    
+    \item \textbf{Herramientas de Validacion:} La definicion de herramientas especificas (JMeter, WAVE, OWASP ZAP) garantiza verificacion objetiva de cumplimiento
+\end{itemize}
+
+\hspace{1.27cm}Las proximas iteraciones deben priorizar requisitos criticos de seguridad y alta prioridad de usabilidad para maximizar el impacto en la experiencia del usuario rural.
+
+% ============================================================================
+% 17. REFERENCIAS BIBLIOGRAFICAS
+% ============================================================================
+\section{Referencias Bibliograficas}
+
+\hspace{1.27cm}Las referencias utilizadas en este documento incluyen:
+
+\begin{itemize}
+    \item ISO/IEC 25010:2011 - Systems and software engineering - Systems and software quality requirements and evaluation (SQuaRE) - System and software quality models
+    \item WCAG 2.1 - Web Content Accessibility Guidelines
+    \item OWASP Top Ten Project - The Ten Most Critical Web Application Security Risks
+    \item Django Documentation - Security best practices
+    \item IEEE 830-1998 - Recommended Practice for Software Requirements Specifications
+\end{itemize>
+
+\end{document}
+
+\hspace{1.27cm}Para la evaluacion y verificacion de los requisitos no funcionales se utilizan las siguientes herramientas especializadas:
+
+\begin{itemize}
+    \item \textbf{JMeter:} Herramienta para pruebas de rendimiento, carga y estres del sistema web
+    \item \textbf{Lighthouse:} Auditoria automatizada de rendimiento, accesibilidad y SEO
+    \item \textbf{WAVE:} Evaluacion de accesibilidad web y cumplimiento de WCAG
+    \item \textbf{GTmetrix:} Analisis de velocidad de carga y optimizacion de rendimiento
+    \item \textbf{OWASP ZAP:} Scanner de seguridad para identificacion de vulnerabilidades web
+    \item \textbf{Burp Suite:} Testing de seguridad y penetracion de aplicaciones web
+    \item \textbf{Selenium:} Automatizacion de pruebas de usabilidad e interfaz de usuario
+    \item \textbf{Sonarqube:} Analisis estatico de codigo para calidad y mantenibilidad
+    \item \textbf{Postman:} Testing de APIs y verificacion de seguridad en endpoints
+    \item \textbf{Django Debug Toolbar:} Profiling de rendimiento en tiempo de desarrollo
+\end{itemize}
+
+\subsection{Herramientas de Monitoreo y Metricas}
+
+\begin{itemize}
+    \item \textbf{Google Analytics:} Metricas de usabilidad y comportamiento de usuarios
+    \item \textbf{New Relic:} Monitoreo de rendimiento de aplicaciones en produccion
+    \item \textbf{Sentry:} Tracking de errores y monitoreo de confiabilidad
+    \item \textbf{Uptime Robot:} Monitoreo de disponibilidad del sistema
+\end{itemize}
+
+% ============================================================================
+% 6. ARQUITECTURA DE LA PLATAFORMA
+% ============================================================================
+\section{Arquitectura de la Plataforma}
+
+\subsection{Patron Arquitectonico}
+
+\hspace{1.27cm}Llamkay.pe implementa una arquitectura Modelo-Vista-Controlador (MVC) basada en el patron MVT (Model-View-Template) de Django, proporcionando separacion clara de responsabilidades y escalabilidad.
+
+\subsection{Componentes de la Arquitectura}
+
+\begin{itemize}
+    \item \textbf{Capa de Presentacion:} Templates HTML con Bootstrap para interfaz responsive
+    \item \textbf{Capa de Logica de Negocio:} Views de Django con decoradores de seguridad
+    \item \textbf{Capa de Datos:} Modelos Django con ORM para PostgreSQL
+    \item \textbf{Capa de Seguridad:} Middleware de Django con proteccion CSRF y autenticacion
+\end{itemize}
+
+\subsection{Integracion de Sistemas}
+
+\begin{itemize}
+    \item Sistema de autenticacion integrado de Django
+    \item Validacion de documentos PDF con bibliotecas especializadas
+    \item Sistema de notificaciones por correo electronico
+    \item Filtros geograficos jerarquicos (Region/Provincia/Distrito)
+\end{itemize}
+
+% ============================================================================
+% 7. METODOLOGIA APLICADA
+% ============================================================================
+\section{Metodologia Aplicada}
+
+\subsection{ISO/IEC 25010 (Modelo de Calidad)}
+
+\hspace{1.27cm}Este proyecto adopta el estandar ISO/IEC 25010:2011 "Systems and software engineering - Systems and software quality requirements and evaluation (SQuaRE) - System and software quality models" como marco metodologico para la definicion y evaluacion de requisitos no funcionales.
+
+\hspace{1.27cm}El modelo de calidad ISO 25010 define ocho caracteristicas principales de calidad del software:
+
+\begin{itemize}
+    \item \textbf{Adecuacion Funcional:} Grado en que el producto proporciona funciones que satisfacen necesidades declaradas e implicitas
+    \item \textbf{Eficiencia de Desempeño:} Rendimiento relativo a la cantidad de recursos utilizados bajo condiciones determinadas
+    \item \textbf{Compatibilidad:} Grado en que un producto puede intercambiar informacion con otros productos
+    \item \textbf{Usabilidad:} Grado en que un producto puede ser utilizado por usuarios especificos para lograr objetivos especificos
+    \item \textbf{Fiabilidad:} Grado en que un sistema realiza funciones especificadas durante un periodo de tiempo
+    \item \textbf{Seguridad:} Grado en que un producto protege la informacion y los datos
+    \item \textbf{Mantenibilidad:} Grado de efectividad con que un producto puede ser modificado
+    \item \textbf{Portabilidad:} Grado de efectividad con que un sistema puede ser transferido entre entornos
+\end{itemize}
+
+\subsection{Scrum (Metodologia Agil)}
+
+\hspace{1.27cm}Para el desarrollo de Llamkay.pe se implemento la metodologia agil Scrum, que permite:
+
+\begin{itemize}
+    \item \textbf{Desarrollo Iterativo:} Entregas incrementales cada 2-3 semanas (sprints)
+    \item \textbf{Adaptabilidad:} Respuesta rapida a cambios en requisitos
+    \item \textbf{Colaboracion:} Comunicacion constante entre equipo de desarrollo y stakeholders
+    \item \textbf{Transparencia:} Seguimiento continuo del progreso mediante daily standups
+    \item \textbf{Mejora Continua:} Retrospectivas al final de cada sprint para optimizar procesos
+\end{itemize>
+
+\hspace{1.27cm}Los roles definidos en el proyecto incluyen:
+\begin{itemize}
+    \item \textbf{Product Owner:} Define requisitos y prioridades del backlog
+    \item \textbf{Scrum Master:} Facilita el proceso y elimina impedimentos
+    \item \textbf{Development Team:} Desarrolladores full-stack responsables de la implementacion
+\end{itemize>
+
+% ============================================================================
+% 8. DEFINICIONES, SIGLAS Y ABREVIATURAS
+% ============================================================================
+\section{Definiciones, Siglas y Abreviaturas}
+\section{Definiciones, Siglas y Abreviaturas}
+
+\begin{longtable}{|p{3cm}|p{10cm}|}
+\hline
+\textbf{Sigla/Abreviatura} & \textbf{Descripcion} \\
+\hline
+\endhead
+
+RNF & Requisito No Funcional \\
+\hline
+UI & Interfaz de Usuario \\
+\hline
+UX & Experiencia de Usuario \\
+\hline
+CRUD & Crear, Leer, Actualizar, Eliminar \\
+\hline
+WCAG & Pautas de Accesibilidad al Contenido Web \\
+\hline
+SSL & Secure Socket Layer \\
+\hline
+CSRF & Cross-Site Request Forgery \\
+\hline
+XSS & Cross-Site Scripting \\
+\hline
+API & Interfaz de Programacion de Aplicaciones \\
+\hline
+GDPR & Reglamento General de Proteccion de Datos \\
+\hline
+SLA & Acuerdo de Nivel de Servicio \\
+\hline
+CDN & Red de Distribucion de Contenido \\
+\hline
+MVT & Modelo-Vista-Template \\
+\hline
+ORM & Object-Relational Mapping \\
+\hline
+JWT & JSON Web Token \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 9. REQUISITOS DETALLADOS NO FUNCIONALES (ISO 25010)
+% ============================================================================
+\section{Requisitos Detallados No Funcionales (ISO 25010)}
+
+\subsection{Usabilidad (ISO 25010)}
+
+\subsubsection{Reconocimiento de Adecuacion}
+\begin{itemize}
+    \item RNF-01: Interfaz intuitiva para usuarios rurales
+    \item RNF-07: Diseño similar a anuncios fisicos conocidos
+\end{itemize}
+
+\subsubsection{Capacidad de Aprendizaje}
+\begin{itemize}
+    \item RNF-03: Sistema de tutoriales integrado
+    \item RNF-06: Ayuda especial para usuarios sin experiencia tecnologica
+    \item RNF-15: Asistente virtual para resolver dudas
+\end{itemize}
+
+\subsubsection{Operabilidad}
+\begin{itemize}
+    \item RNF-02: Botones grandes y texto legible con alto contraste
+    \item RNF-04: Filtros de busqueda basados en habilidades
+    \item RNF-09: Vista previa de perfil antes de publicacion
+\end{itemize}
+
+\subsubsection{Proteccion contra Errores de Usuario}
+\begin{itemize}
+    \item RNF-10: Recordatorios para completar perfil
+    \item RNF-11: Recomendaciones personalizadas de trabajos
+\end{itemize>
+
+\subsubsection{Accesibilidad}
+\begin{itemize}
+    \item RNF-05: Ayudas visuales para personas con dificultades de vision
+    \item RNF-12: Soporte para idiomas locales
+    \item RNF-13: Modo oscuro
+    \item RNF-14: Diseño para diferentes capacidades fisicas
+\end{itemize}
+
+\subsection{Seguridad (ISO 25010)}
+
+\subsubsection{Confidencialidad}
+\begin{itemize}
+    \item RNF-16: Proteccion de informacion personal (nombres, telefonos, direcciones)
+    \item RNF-26: Encriptacion de contraseñas con algoritmos seguros
+\end{itemize}
+
+\subsubsection{Integridad}
+\begin{itemize}
+    \item RNF-27: Proteccion CSRF en todos los formularios
+    \item RNF-19: Verificacion de antecedentes penales
+    \item RNF-20: Verificacion opcional de identidad
+\end{itemize}
+
+\subsubsection{No Repudio}
+\begin{itemize}
+    \item RNF-18: Verificacion de usuarios por SMS o correo electronico
+    \item RNF-22: Filtros de confianza (foto verificada, telefono confirmado)
+\end{itemize}
+
+\subsubsection{Responsabilidad}
+\begin{itemize}
+    \item RNF-17: Sistema de denuncias para trabajos sospechosos
+    \item RNF-21: Sistema de reportes de comportamientos inapropiados
+    \item RNF-23: Alertas sobre empleadores con reportes negativos
+    \item RNF-24: Reporte de contenido ofensivo
+\end{itemize}
+
+\subsubsection{Autenticidad}
+\begin{itemize}
+    \item RNF-25: Autenticacion de dos factores
+    \item RNF-28: Control de acceso basado en roles
+\end{itemize}
+
+\subsection{Eficiencia de Desempeño (ISO 25010)}
+
+\subsubsection{Comportamiento Temporal}
+\begin{itemize}
+    \item RNF-35: Actualizacion de trabajos en tiempo real
+    \item RNF-38: Transiciones rapidas entre pantallas (menos de 1 segundo)
+\end{itemize}
+
+\subsubsection{Utilizacion de Recursos}
+\begin{itemize}
+    \item RNF-39: Funcionamiento en conexiones de internet lentas
+    \item RNF-36: Seccion de trabajos populares para acceso rapido
+\end{itemize}
+
+\subsubsection{Capacidad}
+\begin{itemize}
+    \item RNF-37: Sistema de resumenes periodicos automatizados
+\end{itemize}
+
+\subsection{Fiabilidad (ISO 25010)}
+
+\subsubsection{Madurez}
+\begin{itemize}
+    \item RNF-08: Estadisticas personales precisas
+    \item RNF-44: Sistema robusto de calificaciones mutuas
+\end{itemize}
+
+\subsubsection{Disponibilidad}
+\begin{itemize}
+    \item RNF-35: Eliminacion automatica de trabajos vencidos
+    \item RNF-39: Funcionamiento estable en condiciones de baja conectividad
+\end{itemize}
+
+\subsubsection{Tolerancia a Fallos}
+\begin{itemize}
+    \item RNF-27: Proteccion contra ataques CSRF
+    \item RNF-28: Sistema de roles para prevenir accesos no autorizados
+\end{itemize}
+
+\subsection{Adecuacion Funcional (ISO 25010)}
+
+\subsubsection{Completitud Funcional}
+\begin{itemize}
+    \item RNF-29: Politicas de no discriminacion
+    \item RNF-32: Prohibicion explicita del trabajo infantil
+    \item RNF-33: Aclaracion sobre trabajos informales
+\end{itemize}
+
+\subsubsection{Correccion Funcional}
+\begin{itemize}
+    \item RNF-30: Politicas claras de convivencia
+    \item RNF-31: Consentimiento informado para uso de datos
+    \item RNF-34: Derecho a eliminar cuenta e historial
+\end{itemize>
+
+\subsubsection{Adecuacion Funcional}
+\begin{itemize}
+    \item RNF-40: Seccion educativa para mejora profesional
+    \item RNF-41: Consejos para entrevistas laborales
+    \item RNF-42: Edicion de ofertas por parte de empleadores
+    \item RNF-43: Sistema de sugerencias de mejora
+    \item RNF-45: Visualizacion de promedio de calificaciones
+    \item RNF-46: Sistema de comentarios en calificaciones
+\end{itemize}
+\end{document}
+% ============================================================================
+% 9. MAPEO CON EL MODELO ISO/IEC 25010
+% ============================================================================
+\section{Mapeo con el Modelo ISO/IEC 25010}
+
+\hspace{1.27cm}Los requisitos no funcionales de Llamkay.pe han sido clasificados segun las caracteristicas de calidad del modelo ISO/IEC 25010:
+
+\subsection{Distribucion por Caracteristicas ISO 25010}
+
+\begin{longtable}{|p{3.5cm}|p{2cm}|p{2cm}|p{5.5cm}|}
+\hline
+\textbf{Caracteristica ISO 25010} & \textbf{Cantidad} & \textbf{\%} & \textbf{Requisitos Asociados} \\
+\hline
+\endhead
+
+Usabilidad & 15 & 32.6\% & RNF-01 a RNF-15 (Interfaz intuitiva, accesibilidad, ayudas visuales) \\
+\hline
+Seguridad & 13 & 28.3\% & RNF-16 a RNF-28 (Proteccion datos, autenticacion, control acceso) \\
+\hline
+Adecuacion Funcional & 10 & 21.7\% & RNF-29 a RNF-34, RNF-40 a RNF-43 (Etica, educacion, funcionalidades) \\
+\hline
+Eficiencia de Desempeño & 5 & 10.9\% & RNF-35 a RNF-39 (Rendimiento, tiempo real, optimizacion) \\
+\hline
+Fiabilidad & 3 & 6.5\% & RNF-44 a RNF-46 (Sistema calificaciones, disponibilidad) \\
+\hline
+\textbf{TOTAL} & \textbf{46} & \textbf{100\%} & - \\
+\hline
+\end{longtable}
+
+\subsection{Subcaracteristicas Implementadas}
+
+\begin{longtable}{|p{3cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Caracteristica} & \textbf{Subcaracteristica} & \textbf{Requisitos Relacionados} \\
+\hline
+\endhead
+
+\multirow{4}{*}{Usabilidad} & Reconocimiento de Adecuacion & RNF-01, RNF-07 \\
+\cline{2-3}
+& Capacidad de Aprendizaje & RNF-03, RNF-06, RNF-15 \\
+\cline{2-3}
+& Operabilidad & RNF-02, RNF-04, RNF-09 \\
+\cline{2-3}
+& Accesibilidad & RNF-05, RNF-12, RNF-13, RNF-14 \\
+\hline
+
+\multirow{5}{*}{Seguridad} & Confidencialidad & RNF-16, RNF-26 \\
+\cline{2-3}
+& Integridad & RNF-19, RNF-20, RNF-27 \\
+\cline{2-3}
+& No Repudio & RNF-18, RNF-22 \\
+\cline{2-3}
+& Responsabilidad & RNF-17, RNF-21, RNF-23, RNF-24 \\
+\cline{2-3}
+& Autenticidad & RNF-25, RNF-28 \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 10. PRUEBAS Y HERRAMIENTAS PARA VALIDACION DE REQUISITOS NO FUNCIONALES
+% ============================================================================
+\section{Pruebas y Herramientas para Validacion de Requisitos No Funcionales}
+
+\subsection{Herramientas de Evaluacion Automatizada}
+
+\begin{longtable}{|p{3cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Herramienta} & \textbf{Categoria RNF} & \textbf{Proposito y Metricas} \\
+\hline
+\endhead
+
+JMeter & Rendimiento & Pruebas de carga, tiempo de respuesta, throughput, concurrencia \\
+\hline
+Lighthouse & Usabilidad/Rendimiento & Auditorias de performance, accesibilidad, SEO, mejores practicas \\
+\hline
+WAVE & Accesibilidad & Evaluacion WCAG 2.1, contraste, navegacion por teclado \\
+\hline
+OWASP ZAP & Seguridad & Scanner vulnerabilidades, inyeccion SQL, XSS, CSRF \\
+\hline
+Burp Suite & Seguridad & Testing penetracion, analisis manual seguridad \\
+\hline
+Selenium & Usabilidad & Automatizacion pruebas interfaz, flujos usuario \\
+\hline
+SonarQube & Mantenibilidad & Analisis estatico codigo, complejidad, cobertura \\
+\hline
+\end{longtable}
+
+\subsection{Protocolo de Validacion}
+
+\begin{itemize}
+    \item \textbf{Pruebas de Rendimiento:} JMeter con 100-500 usuarios concurrentes
+    \item \textbf{Auditoria Accesibilidad:} WAVE + validacion manual WCAG 2.1 AA
+    \item \textbf{Security Testing:} OWASP ZAP scan + penetration testing manual
+    \item \textbf{Usabilidad:} Selenium automation + user testing con 10 usuarios rurales
+    \item \textbf{Cross-browser:} Validacion en Chrome, Firefox, Safari, Edge
+    \item \textbf{Mobile Testing:} Responsive design en dispositivos Android/iOS
+\end{itemize}
+
+\subsection{Metricas de Aceptacion}
+
+\begin{longtable}{|p{3cm}|p{3cm}|p{7cm}|}
+\hline
+\textbf{Categoria} & \textbf{Metrica} & \textbf{Valor Objetivo} \\
+\hline
+\endhead
+
+Rendimiento & Tiempo Carga & < 3 segundos en conexion 3G \\
+\hline
+Usabilidad & Tasa Completacion Tareas & > 90\% usuarios rurales \\
+\hline
+Accesibilidad & Cumplimiento WCAG & Nivel AA (100\%) \\
+\hline
+Seguridad & Vulnerabilidades Criticas & 0 detectadas \\
+\hline
+Disponibilidad & Uptime & > 99.5\% mensual \\
+\hline
+\end{longtable}
+
+% ============================================================================
+% 11. REQUISITOS NO FUNCIONALES
+% ============================================================================

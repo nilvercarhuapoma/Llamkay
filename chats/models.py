@@ -32,6 +32,7 @@ class Mensaje(models.Model):
     fecha_envio = models.DateTimeField(blank=True, null=True)
     editado = models.BooleanField(default=False)
     eliminado = models.BooleanField(default=False)
+    leido = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'mensaje'

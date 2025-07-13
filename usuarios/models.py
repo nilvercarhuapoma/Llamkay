@@ -64,7 +64,7 @@ class Usuario(models.Model):
     tipo_usuario = models.TextField(blank=True, null=True)  # This field type is a guess.
     id_comunidad = models.ForeignKey(Comunidad, models.DO_NOTHING, db_column='id_comunidad', blank=True, null=True)
     habilitado = models.BooleanField(blank=True, null=True)
-
+     
     class Meta:
         db_table = 'usuario'
 
@@ -160,20 +160,7 @@ class Habilidad(models.Model):
         db_table = 'habilidad'
 
 
-class Ofertatrabajo(models.Model):
-    id_oferta = models.IntegerField(primary_key=True)
-    id_empleador = models.ForeignKey(Empleador, models.DO_NOTHING, db_column='id_empleador', blank=True, null=True)
-    id_categoria = models.ForeignKey(Categoriatrabajo, models.DO_NOTHING, db_column='id_categoria', blank=True, null=True)
-    titulo = models.CharField(blank=True, null=True)
-    descripcion = models.TextField(blank=True, null=True)
-    fecha_inicio = models.DateField(blank=True, null=True)
-    fecha_fin = models.DateField(blank=True, null=True)
-    sueldo = models.FloatField(blank=True, null=True)
-    estado = models.BooleanField(blank=True, null=True)
-    id_usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='id_usuario', blank=True, null=True)
 
-    class Meta:
-        db_table = 'ofertatrabajo'
 
 
 class Politicalegal(models.Model):
@@ -188,7 +175,8 @@ class Politicalegal(models.Model):
 
 class Postulacion(models.Model):
     id_postulacion = models.IntegerField(primary_key=True)
-    id_oferta = models.ForeignKey(Ofertatrabajo, models.DO_NOTHING, db_column='id_oferta', blank=True, null=True)
+    id_oferta = models.ForeignKey('trabajos.OfertaUsuario', models.DO_NOTHING, db_column='id_oferta', blank=True, null=True)
+
     id_usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='id_usuario', blank=True, null=True)
     estado = models.TextField(blank=True, null=True)
     fecha_postulacion = models.DateField(blank=True, null=True)

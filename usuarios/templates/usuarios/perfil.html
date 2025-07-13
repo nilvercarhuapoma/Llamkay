@@ -80,11 +80,11 @@
                     <p>👤 {{ usuario.username }}</p>
                     <span class="info-label">👥 Tipo de usuario:</span>
                     <span class="info-value">
-                        {% if tipo_usuario == "trabajador" %}Trabajador
-                        {% elif tipo_usuario == "empleador" %}Empleador
-                        {% elif tipo_usuario == "trabajador_empleador" %}Trabajador y Empleador
+                        {% if tipo_usuario == "buscar-trabajo" %}Trabajador
+                        {% elif tipo_usuario == "ofrecer-trabajo" %}Empleador
+                        {% elif tipo_usuario == "ambos" %}Trabajador y Empleador
                         {% elif tipo_usuario == "empresa" %}Empresa
-                        {% else %}No especificado
+                        {% else %}{{ tipo_usuario|default:"No especificado" }}
                         {% endif %}
                     </span>
                     <p>📍 

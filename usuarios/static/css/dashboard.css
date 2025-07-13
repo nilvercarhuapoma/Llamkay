@@ -1,9 +1,28 @@
+/* PREVENCIÓN DE SCROLL HORIZONTAL */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Imágenes responsivas globales */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
+    padding: 0;
     background: linear-gradient(135deg, #9EBC8A 0%, #B5C99A 100%);
     color: #333;
     min-height: 100vh;
+    overflow-x: hidden; /* Prevenir scroll horizontal */
+    width: 100%;
 }
 
 /* NAVBAR MEJORADO */
@@ -15,8 +34,11 @@ body {
     background: linear-gradient(135deg, #097a4f 0%, #0c8659 50%, #119c69 100%);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     position: relative;
-    overflow: visible; /* Cambio importante: permitir overflow */
-    z-index: 1000; /* Z-index alto para el navbar */
+    overflow: visible;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 80px;
 }
 
 /* Efecto de brillo sutil en el navbar */
@@ -55,6 +77,8 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     cursor: pointer;
+    flex-shrink: 0;
+    min-width: 0;
 }
 
 .navbar .logo:hover {
@@ -113,8 +137,10 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
-    position: relative; /* Importante para el posicionamiento de dropdowns */
-    z-index: 1001; /* Z-index más alto que el navbar */
+    position: relative;
+    z-index: 1001;
+    flex-shrink: 0;
+    max-width: 50%;
 }
 
 .dropdown-icon {
@@ -132,6 +158,7 @@ body {
 .auth-buttons {
     display: flex;
     gap: 12px;
+    flex-shrink: 0;
 }
 
 .btn {
@@ -141,6 +168,9 @@ body {
     cursor: pointer;
     font-family: inherit;
     transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .btn.blue {
@@ -165,6 +195,51 @@ body {
     box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.3);
     background: linear-gradient(45deg, #f5f5f5, #EEEDEB);
 }
+.btn.green {
+    background: linear-gradient(45deg, #EEEDEB, #f5f5f5);
+    color: #123524;
+    padding: 12px 24px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    gap: 8px;
+    font-weight: 700;
+    border: 2px solid transparent;
+    outline: none;
+    font-size: 14px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn.green:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(45deg, #f5f5f5, #EEEDEB);
+}
+.btn::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    background-image: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(255, 255, 255, 0.8),
+        rgba(255, 255, 255, 0) 70%
+    );
+    top: 0;
+    left: -100px;
+    opacity: 0.6;
+}
+
+.btn:hover::before {
+    animation: shine 1.5s ease-out;
+}
+
 
 .btn.grey {
     background: rgba(238, 237, 235, 0.1);
@@ -211,6 +286,7 @@ body {
     animation: shine 1.5s ease-out;
 }
 
+
 @keyframes shine {
     0% { left: -100px; }
     60% { left: 100%; }
@@ -222,9 +298,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px 0;
+    padding: 30px 20px;
     position: relative;
-    z-index: 1; /* Debajo del navbar */
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .carousel {
@@ -235,6 +313,7 @@ body {
     overflow: hidden;
     border-radius: 30px;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
 }
 
 .carousel-image {
@@ -292,8 +371,10 @@ body {
     transform: translate(-50%, -30%);
     color: white;
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-    z-index: 2;
+    z-index: 10; /* Z-index más alto para estar por encima */
     text-align: center;
+    width: 90%;
+    max-width: 600px;
 }
 
 .hero-text h1 {
@@ -314,7 +395,19 @@ body {
 .hero-buttons {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 20px;
+    flex-wrap: nowrap; /* Mantener en fila */
+    z-index: 11; /* Z-index alto para los botones */
+    position: relative;
+}
+
+.hero-buttons .btn {
+    z-index: 12; /* Z-index individual para cada botón */
+    position: relative;
+    white-space: nowrap;
+    flex-shrink: 0; /* Evitar que se compriman */
+    min-width: fit-content;
 }
 
 /* SECCIÓN BROWSE MEJORADA */
@@ -329,7 +422,9 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: relative;
     overflow: hidden;
-    z-index: 1; /* Debajo del navbar */
+    z-index: 1; /* Z-index bajo para no interferir con hero */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .browse::before {
@@ -470,53 +565,268 @@ body {
     display: none;
 }
 
-/* RESPONSIVE MEJORADO */
+/* ===== FOOTER STYLES ===== */
+.footer {
+    background: linear-gradient(135deg, #034D31 0%, #123524 50%, #0c2e1a 100%);
+    color: #EEEDEB;
+    margin-top: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(238, 237, 235, 0.3), transparent);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 20px 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+    color: #EEEDEB;
+    margin-bottom: 20px;
+    font-weight: 700;
+    position: relative;
+}
+
+.footer-section h3::after,
+.footer-section h4::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #5B913B, #9EBC8A);
+    border-radius: 2px;
+}
+
+.footer-logo h3 {
+    font-size: 28px;
+    font-family: "Lilita One", sans-serif;
+    margin-bottom: 15px;
+    color: #9EBC8A;
+}
+
+.footer-logo p {
+    color: rgba(238, 237, 235, 0.8);
+    line-height: 1.6;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+/* Redes sociales */
+.footer-social h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #EEEDEB;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(238, 237, 235, 0.1);
+    background: rgba(238, 237, 235, 0.05);
+}
+
+.social-link:hover {
+    background: rgba(238, 237, 235, 0.1);
+    transform: translateX(5px);
+    border-color: rgba(238, 237, 235, 0.2);
+}
+
+.social-link.facebook:hover {
+    background: rgba(24, 119, 242, 0.1);
+    border-color: #1877f2;
+}
+
+.social-link.instagram:hover {
+    background: rgba(225, 48, 108, 0.1);
+    border-color: #e1306c;
+}
+
+.social-link.tiktok:hover {
+    background: rgba(255, 0, 80, 0.1);
+    border-color: #ff0050;
+}
+
+.social-link.whatsapp:hover {
+    background: rgba(37, 211, 102, 0.1);
+    border-color: #25d366;
+}
+
+.social-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+}
+
+/* Enlaces del footer */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: rgba(238, 237, 235, 0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.footer-links a:hover {
+    color: #9EBC8A;
+    transform: translateX(5px);
+}
+
+.footer-links a::before {
+    content: "→";
+    margin-right: 8px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Información de contacto */
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(238, 237, 235, 0.8);
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.contact-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+}
+
+/* Footer bottom */
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(238, 237, 235, 0.1);
+    padding: 25px 0;
+}
+
+.footer-bottom .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    grid-template-columns: none;
+    gap: 20px;
+}
+
+.copyright p {
+    margin: 0;
+    color: rgba(238, 237, 235, 0.7);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-bottom-links a {
+    color: rgba(238, 237, 235, 0.7);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s ease;
+}
+
+.footer-bottom-links a:hover {
+    color: #9EBC8A;
+}
+
+/* Responsive footer */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 15px 25px;
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 40px 15px 20px;
     }
     
-    .navbar-center {
-        display: none;
+    .footer-bottom .footer-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
     }
     
-    .navbar .logo {
-        font-size: 26px;
+    .footer-bottom-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
     }
     
-    .auth-buttons {
+    .social-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 10px;
     }
-    
-    .btn {
-        padding: 10px 18px;
-        font-size: 13px;
+}
+
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 30px 10px 15px;
     }
     
-    .hero-text h1 {
-        font-size: 32px;
+    .footer-logo h3 {
+        font-size: 24px;
     }
     
-    .hero-text p {
-        font-size: 16px;
+    .social-links {
+        grid-template-columns: 1fr;
     }
     
-    .carousel {
-        width: 95%;
-        height: 350px;
-    }
-    
-    .browse {
-        margin: 30px 20px;
-        padding: 30px 25px;
-    }
-    
-    .cards-container {
-        gap: 20px;
-    }
-    
-    .card {
-        width: 160px;
+    .footer-bottom-links {
+        flex-direction: column;
+        gap: 10px;
     }
 }
 
@@ -760,6 +1070,42 @@ body {
     font-size: 12px;
     color: #65676b;
     margin-left: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+/* Contador de mensajes no leídos */
+.unread-count {
+    background: #ff3040;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+}
+
+/* Estilos para mensajes con enlaces */
+.message-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.message-item:hover {
+    background-color: #f8f9fa;
+    text-decoration: none !important;
 }
 
 /* ===== USER DROPDOWN ===== */
@@ -845,3 +1191,5 @@ body {
     display: block;
     pointer-events: none; /* ⚠️ Clave para permitir clics a través */
 }
+
+

@@ -12,7 +12,9 @@ from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
-
+from trabajos.utils import obtener_trabajos_unificados
+from trabajos.models import OfertaUsuario
+from usuarios.decoradores import rol_requerido
 
 from .forms import (
     RegisterFormStep1, RegisterFormStep2, RegisterFormStep3,
@@ -21,7 +23,7 @@ from .forms import (
 
 from usuarios.models import (
     Usuario, Departamento, Provincia, Distrito, Profile,
-    ActividadReciente, Postulacion, Ofertatrabajo, Calificacion,
+    ActividadReciente, Postulacion,Calificacion,
     UsuarioHabilidad, Certificacion
 )
 
@@ -87,15 +89,33 @@ def validar_correo(request):
 
 # --- REGISTRO MULTIPASO ---
 
+MAP_TIPO_USUARIO = {
+    'trabajador': 'buscar-trabajo',
+    'empleador': 'ofrecer-trabajo',
+    'trabajador_empleador': 'ambos',
+    'empresa': 'empresa',
+}
+
+TIPOS_VALIDOS = ['buscar-trabajo', 'ofrecer-trabajo', 'ambos', 'empresa']
+
 @csrf_protect
 def seleccionar_tipo(request):
     if request.method == 'POST':
         tipo = request.POST.get('tipo_usuario')
-        if tipo in ['trabajador', 'empleador', 'trabajador_empleador', 'empresa']:
-            request.session['tipo_usuario'] = tipo
-            return redirect('usuarios:register')
+
+        # Acepta tipo ya mapeado (de tu sistema) o lo traduce si viene del formulario HTML antiguo
+        if tipo in TIPOS_VALIDOS:
+            tipo_final = tipo
+        elif tipo in MAP_TIPO_USUARIO:
+            tipo_final = MAP_TIPO_USUARIO[tipo]
         else:
-            return render(request, 'usuarios/seleccionar_tipo.html', {'error': 'Selecciona una opción válida.'})
+            return render(request, 'usuarios/seleccionar_tipo.html', {
+                'error': 'Selecciona una opción válida.'
+            })
+
+        request.session['tipo_usuario'] = tipo_final
+        return redirect('usuarios:register')
+
     return render(request, 'usuarios/seleccionar_tipo.html')
 
 def register(request, tipo_usuario=None):
@@ -327,13 +347,14 @@ def perfil(request):
         profile, _ = Profile.objects.get_or_create(user=request.user, id_usuario=usuario_db)
 
         postulaciones = Postulacion.objects.filter(id_usuario=usuario_db)
-        trabajos = Ofertatrabajo.objects.filter(id_oferta__in=postulaciones.values_list('id_oferta', flat=True))
+        trabajos = OfertaUsuario.objects.filter(id__in=postulaciones.values_list('id_oferta', flat=True))
+
 
         trabajos_completados = trabajos.filter(estado=True)
         trabajos_activos = trabajos.filter(estado=False)
         calificacion_promedio = Calificacion.objects.filter(id_usuario=usuario_db).aggregate(promedio=Avg('calificacion'))['promedio'] or 0
         inicio_mes = datetime.now().replace(day=1)
-        ingresos_mes = trabajos_completados.filter(fecha_fin__gte=inicio_mes).aggregate(total=Sum('sueldo'))['total'] or 0
+        ingresos_mes = trabajos_completados.filter(fecha_limite__gte=inicio_mes).aggregate(total=Sum('pago'))['total'] or 0
 
         total_completados = trabajos_completados.count()
         satisfechos = Calificacion.objects.filter(id_usuario=usuario_db, calificacion__gte=4).count()
@@ -369,19 +390,16 @@ def perfil(request):
                 'porcentaje_satisfechos': round(porcentaje_satisfechos),
                 'ingresos_mes': ingresos_mes,
             },
-            'trabajos': trabajos.order_by('-fecha_fin'),
+            'trabajos': trabajos.order_by('-fecha_registro')[:5],
             'actividades': actividades,
         }
 
         return render(request, 'usuarios/perfil.html', context)
 
-    except Usuario.DoesNotExist:
-        messages.error(request, "No se encontró tu perfil extendido.")
-        return redirect('usuarios:login')
-
     except Exception as e:
-        print(f"Error inesperado en vista perfil: {str(e)}")
-        messages.error(request, "Error al cargar el perfil.")
+        logger.error(f"Error al cargar el perfil: {str(e)}")
+        traceback.print_exc()
+        messages.error(request, 'Hubo un problema al cargar tu perfil.')
         return redirect('usuarios:dashboard')
 
 @login_required
@@ -389,8 +407,86 @@ def dashboard(request):
     try:
         usuario_db = Usuario.objects.get(user=request.user)
         profile, _ = Profile.objects.get_or_create(user=request.user, id_usuario=usuario_db)
-        context = {'usuario': usuario_db, 'profile': profile}
+
+        # Obtener máximo 6 trabajos destacados
+        trabajos_destacados = obtener_trabajos_unificados(limit=6)
+
+        # Obtener mensajes recientes para el dropdown
+        from chats.models import Chat, Mensaje
+        from django.db.models import Max, Q, Count
+        
+        mensajes_recientes = []
+        total_mensajes_no_leidos = 0
+        
+        # Obtener chats donde el usuario actual participa con mensajes
+        chats_con_mensajes = []
+        chats_usuario = Chat.objects.filter(
+            Q(usuario_1=usuario_db) | Q(usuario_2=usuario_db)
+        )
+        
+        for chat in chats_usuario:
+            # Verificar si el chat tiene mensajes
+            ultimo_mensaje = Mensaje.objects.filter(
+                id_chat=chat
+            ).order_by('-fecha_envio').first()
+            
+            if ultimo_mensaje:
+                chats_con_mensajes.append((chat, ultimo_mensaje.fecha_envio))
+        
+        # Ordenar por fecha del último mensaje y tomar los 3 más recientes
+        chats_con_mensajes.sort(key=lambda x: x[1], reverse=True)
+        chats_usuario = [chat for chat, fecha in chats_con_mensajes[:3]]
+        
+        for chat in chats_usuario:
+            # Determinar el otro usuario en el chat
+            otro_usuario_db = chat.usuario_2 if chat.usuario_1 == usuario_db else chat.usuario_1
+            
+            # Obtener el perfil del otro usuario
+            try:
+                otro_perfil = Profile.objects.get(id_usuario=otro_usuario_db)
+            except Profile.DoesNotExist:
+                continue
+            
+            # Obtener el último mensaje del chat
+            ultimo_mensaje = Mensaje.objects.filter(
+                id_chat=chat
+            ).order_by('-fecha_envio').first()
+            
+            if ultimo_mensaje:
+                # Contar mensajes no leídos de la conversación (del otro usuario hacia mí)
+                mensajes_no_leidos = Mensaje.objects.filter(
+                    id_chat=chat,
+                    remitente=otro_usuario_db,
+                    leido=False,
+                    eliminado=False
+                ).count()
+                
+                total_mensajes_no_leidos += mensajes_no_leidos
+                
+                # Solo agregar al dropdown si hay mensajes no leídos
+                if mensajes_no_leidos > 0:
+                    # Crear datos del mensaje para el template
+                    mensaje_data = {
+                        'chat_id': chat.id_chat,
+                        'otro_usuario': otro_perfil,
+                        'ultimo_mensaje': ultimo_mensaje.contenido[:50] + "..." if len(ultimo_mensaje.contenido) > 50 else ultimo_mensaje.contenido,
+                        'fecha_envio': ultimo_mensaje.fecha_envio,
+                        'no_leidos': mensajes_no_leidos,
+                        'foto_otro_usuario': otro_perfil.foto_url.url if otro_perfil.foto_url else None,
+                        'nombre_otro_usuario': f"{otro_usuario_db.nombres} {otro_usuario_db.apellidos}" if otro_usuario_db.nombres else otro_usuario_db.user.username,
+                        'iniciales': f"{otro_usuario_db.nombres[:1]}{otro_usuario_db.apellidos[:1]}" if otro_usuario_db.nombres and otro_usuario_db.apellidos else otro_usuario_db.user.username[:2].upper()
+                    }
+                    mensajes_recientes.append(mensaje_data)
+
+        context = {
+            'usuario': usuario_db,
+            'profile': profile,
+            'trabajos': trabajos_destacados,
+            'mensajes_recientes': mensajes_recientes,
+            'total_mensajes_no_leidos': total_mensajes_no_leidos,
+        }
         return render(request, 'usuarios/dashboard.html', context)
+
     except Usuario.DoesNotExist:
         messages.error(request, "No se encontró tu perfil.")
         return redirect('trabajo_llamkay:home')

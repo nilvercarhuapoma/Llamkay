@@ -5,111 +5,13 @@
     <meta charset="UTF-8">
     <title>Chat con {{ nombre_otro_usuario }}</title>
     <link rel="stylesheet" href="{% static 'css/chat.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/chat-settings.css' %}" />
     <link rel="icon" href="{% static 'images/llamkay.png' %}" type="image/png">
+    
+    <!-- Google Fonts para las opciones de fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos para el botón de volver más visible */
-        .back-btn {
-            background: #4CAF50;
-            color: white !important;
-            padding: 7px 10px;
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 25px;
-            height: 25px;
-            margin: 0 12px 12px 0;
-        }
-        
-        .back-btn:hover {
-            background: #45a049;
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        
-        /* Estilos para el cuadro de mensaje */
-        .message-form {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2d5a3d;
-            border-radius: 25px;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            width: 90%;
-            max-width: 600px;
-            z-index: 1000;
-        }
-        
-        .message-form textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #e8f5e8;
-            font-size: 16px;
-            resize: none;
-            max-height: 100px;
-            min-height: 20px;
-        }
-        
-        .message-form textarea::placeholder {
-            color: #a8d4a8;
-        }
-        
-        .message-form button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        
-        .message-form button:hover {
-            background: #45a049;
-        }
-        
-        /* Ajustar el chat para que no se superponga con el formulario */
-        .chat-window {
-            padding-bottom: 120px;
-        }
-        
-        /* Estilos para botones de editar/eliminar */
-        .message {
-            position: relative;
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            border-radius: 15px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-        
-        .message.sent {
-            background: #4CAF50;
-            color: white;
-            margin-left: auto;
-            margin-right: 10px;
-        }
-        
-        .message.received {
-            background: #f0f0f0;
-            color: #333;
-            margin-left: 10px;
-            margin-right: auto;
-        }
-        
+        /* Estilos específicos para acciones de mensajes */
         .message-actions {
             position: absolute;
             bottom: 5px;
@@ -253,10 +155,15 @@
             {% if foto_otro_usuario %}
                 <img src="{{ foto_otro_usuario }}" alt="Avatar" class="avatar">
             {% else %}
-                <img src="{% static 'default-avatar.png' %}" alt="Avatar" class="avatar">
+                <img src="{% static 'images/default-avatar.png' %}" alt="Avatar" class="avatar">
             {% endif %}
             <strong>{{ nombre_otro_usuario }}</strong>
         </div>
+        
+        <!-- Botón de ajustes del chat -->
+        <button class="chat-settings-btn" title="Ajustes del chat">
+            ⚙️
+        </button>
     </header>
 
     <main class="chat-window">
@@ -265,40 +172,47 @@
                 {% for mensaje in mensajes %}
                     {% if not mensaje.eliminado %}
                         <div class="message {% if mensaje.remitente == request.user.perfil %}sent{% else %}received{% endif %}" data-mensaje-id="{{ mensaje.id_mensaje }}">
-                            <p>
-                                {% if mensaje.editado %}
-                                    <span class="mensaje-editado">{{ mensaje.contenido }} (editado)</span>
-                                {% else %}
-                                    {{ mensaje.contenido }}
+                            <div class="message-content">
+                                <p>
+                                    {% if mensaje.editado %}
+                                        <span class="mensaje-editado">{{ mensaje.contenido }} <em>(editado)</em></span>
+                                    {% else %}
+                                        {{ mensaje.contenido }}
+                                    {% endif %}
+                                </p>
+                                <small>{{ mensaje.fecha_envio|date:"d/m H:i" }}</small>
+                                
+                                {% if mensaje.remitente == request.user.perfil %}
+                                    <div class="message-actions">
+                                        <button class="action-btn edit-btn" onclick="openEditModal({{ mensaje.id_mensaje }}, '{{ mensaje.contenido|escapejs }}')"></button>
+                                        <button class="action-btn delete-btn" onclick="deleteMessage({{ mensaje.id_mensaje }})"></button>
+                                    </div>
                                 {% endif %}
-                            </p>
-                            <small>{{ mensaje.fecha_envio|date:"d/m H:i" }}</small>
-                            
-                            {% if mensaje.remitente == request.user.perfil %}
-                                <div class="message-actions">
-                                    <button class="action-btn edit-btn" onclick="openEditModal({{ mensaje.id_mensaje }}, '{{ mensaje.contenido|escapejs }}')"></button>
-                                    <button class="action-btn delete-btn" onclick="deleteMessage({{ mensaje.id_mensaje }})"></button>
-                                </div>
-                            {% endif %}
+                            </div>
                         </div>
                     {% else %}
                         <div class="message {% if mensaje.remitente == request.user.perfil %}sent{% else %}received{% endif %} mensaje-eliminado">
-                            <p><em>Este mensaje fue eliminado</em></p>
-                            <small>{{ mensaje.fecha_envio|date:"d/m H:i" }}</small>
+                            <div class="message-content">
+                                <p><em>Este mensaje fue eliminado</em></p>
+                                <small>{{ mensaje.fecha_envio|date:"d/m H:i" }}</small>
+                            </div>
                         </div>
                     {% endif %}
                 {% endfor %}
             {% else %}
                 <div class="empty-chat">
-                    <p>No hay mensajes aún. ¡Inicia la conversación!</p>
+                    <p>¡Comienza una nueva conversación! 💬</p>
                 </div>
             {% endif %}
+            
+            <!-- Espaciador visual para evitar que el último mensaje tope con el formulario -->
+            <div style="height: 40px; flex-shrink: 0;"></div>
         </div>
 
         <form method="POST" class="message-form">
             {% csrf_token %}
             {{ form.contenido }}
-            <button type="submit">Send</button>
+            <button type="submit">Enviar</button>
         </form>
     </main>
 
@@ -320,13 +234,104 @@
         </div>
     </div>
 
+    <!-- Panel de ajustes del chat -->
+    <div class="settings-overlay"></div>
+    <div class="settings-panel">
+        <div class="settings-header">
+            <h3 class="settings-title">⚙️ Ajustes del Chat</h3>
+            <button class="close-settings">×</button>
+        </div>
+
+        <!-- Colores de fondo -->
+        <div class="setting-section">
+            <div class="setting-label">🎨 Color de fondo</div>
+            <div class="color-grid">
+                <div class="color-option color-gradient-1" data-gradient="gradient-1"></div>
+                <div class="color-option color-gradient-2" data-gradient="gradient-2"></div>
+                <div class="color-option color-gradient-3" data-gradient="gradient-3"></div>
+                <div class="color-option color-gradient-4" data-gradient="gradient-4"></div>
+                <div class="color-option color-gradient-5" data-gradient="gradient-5"></div>
+                <div class="color-option color-gradient-6" data-gradient="gradient-6"></div>
+                <div class="color-option color-gradient-7" data-gradient="gradient-7"></div>
+                <div class="color-option color-gradient-8" data-gradient="gradient-8"></div>
+            </div>
+        </div>
+
+        <!-- Tipo de fuente -->
+        <div class="setting-section">
+            <div class="setting-label">🔤 Tipo de letra</div>
+            <div class="font-selector">
+                <div class="font-option font-roboto" data-font="roboto">Roboto (por defecto)</div>
+                <div class="font-option font-open-sans" data-font="open-sans">Open Sans</div>
+                <div class="font-option font-lato" data-font="lato">Lato</div>
+                <div class="font-option font-poppins" data-font="poppins">Poppins</div>
+                <div class="font-option font-nunito" data-font="nunito">Nunito</div>
+            </div>
+        </div>
+
+        <!-- Tamaño de fuente -->
+        <div class="setting-section">
+            <div class="setting-label">📏 Tamaño de letra</div>
+            <div class="size-selector">
+                <button class="size-btn size-decrease">-</button>
+                <span class="size-display">16px</span>
+                <button class="size-btn size-increase">+</button>
+            </div>
+        </div>
+
+        <!-- Botón reset -->
+        <button class="reset-btn">🔄 Restaurar valores predeterminados</button>
+    </div>
+
+    <script src="{% static 'js/chat-settings.js' %}"></script>
+
     <script>
         let currentEditingMessageId = null;
 
-        // Auto-scroll al final de los mensajes
+        // Auto-scroll al final de los mensajes - MEJORADO
         document.addEventListener('DOMContentLoaded', function() {
             const messagesContainer = document.querySelector('.messages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            if (!messagesContainer) {
+                console.error('No se encontró el contenedor de mensajes');
+                return;
+            }
+            
+            // Función para hacer scroll al final
+            function scrollToBottom() {
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    console.log('Scroll realizado:', messagesContainer.scrollHeight);
+                }
+            }
+            
+            // Scroll inicial con delay
+            setTimeout(scrollToBottom, 100);
+            
+            // Observar cambios en el DOM
+            const observer = new MutationObserver(function(mutations) {
+                let shouldScroll = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length > 0) {
+                        shouldScroll = true;
+                    }
+                });
+                if (shouldScroll) {
+                    setTimeout(scrollToBottom, 50);
+                }
+            });
+            
+            observer.observe(messagesContainer, { 
+                childList: true, 
+                subtree: true,
+                attributes: false,
+                characterData: false
+            });
+            
+            // Forzar scroll cada vez que se carga la página
+            window.addEventListener('load', function() {
+                setTimeout(scrollToBottom, 200);
+            });
         });
 
         // Función para abrir modal de edición
@@ -378,13 +383,57 @@
             }
         }
 
-        // Auto-resize del textarea en el formulario principal
+        // Auto-resize del textarea en el formulario principal tipo Facebook
         document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.querySelector('.message-form textarea');
+            const form = document.querySelector('.message-form');
+            
             if (textarea) {
-                textarea.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+                // Auto-resize function
+                function autoResize() {
+                    textarea.style.height = 'auto';
+                    const newHeight = Math.min(Math.max(textarea.scrollHeight, 20), 100);
+                    textarea.style.height = newHeight + 'px';
+                }
+                
+                // Event listeners
+                textarea.addEventListener('input', autoResize);
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        form.submit();
+                    }
+                });
+                
+                // Initial resize
+                autoResize();
+            }
+            
+            // Debug: verificar envío del formulario
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const content = textarea.value.trim();
+                    console.log('Enviando mensaje:', content);
+                    
+                    if (!content) {
+                        e.preventDefault();
+                        alert('Por favor escribe un mensaje');
+                        return false;
+                    }
+                    
+                    // Hacer scroll al final después de enviar mensaje - MEJORADO
+                    const messagesContainer = document.querySelector('.messages');
+                    if (messagesContainer) {
+                        // Limpiar el textarea
+                        textarea.value = '';
+                        textarea.style.height = 'auto';
+                        
+                        // Forzar scroll al final
+                        setTimeout(function() {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                            console.log('Scroll después de enviar:', messagesContainer.scrollHeight);
+                        }, 50);
+                    }
                 });
             }
         });

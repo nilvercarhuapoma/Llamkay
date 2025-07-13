@@ -89,7 +89,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
 
-        'NAME': 'llamkay',
+        'NAME': 'yamkay',
         'USER': 'leimer',
         'PASSWORD': '12345',
 
@@ -123,11 +123,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-pe'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
+
+USE_L10N = True
 
 USE_TZ = True
 
@@ -146,8 +148,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 STATIC_URL = '/static/'
 
+# Para encontrar archivos static en las apps individuales
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 # Solo si estás en desarrollo (fuera de producción)
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+STATICFILES_DIRS = [ 
+    BASE_DIR / 'static',  # Para archivos static globales
+]
+
+# En producción usar esto:
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 LOGIN_REDIRECT_URL = 'trabajo_llamkay:home' #redirección de usuarios con inicio de sesión a index
 
@@ -155,6 +168,7 @@ LOGIN_REDIRECT_URL = 'trabajo_llamkay:home' #redirección de usuarios con inicio
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+#AUTH_USER_MODEL = 'usuarios.Usuario'
 
 
 
